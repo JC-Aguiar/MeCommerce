@@ -3,6 +3,8 @@ package br.com.jcaguiar.ecommerce;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @EnableCaching
 @SpringBootApplication
@@ -86,6 +88,12 @@ public class EcommerceApplication {
 	 * 		Comentar Produtos
 	 * 		Dar nota para Produtos
 	 */
+
+	@RequestMapping("/")
+	@ResponseBody
+	String home() {
+		return "Hello World!";
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(EcommerceApplication.class, args);
