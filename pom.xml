@@ -16,10 +16,17 @@
 	<name>ecommerce</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
+
 		<!-- Java -->
-		<java.version>11</java.version>
+		<java.version>16</java.version>
+
 		<!-- Spring Security -->
 		<spring-security.version>5.5.0</spring-security.version>
+
+		<!-- Maven Compiler -->
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
+
 	</properties>
 	<dependencies>
 
@@ -63,9 +70,9 @@
 
 		<!-- MYSQL -->
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<scope>runtime</scope>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.3.0</version>
 		</dependency>
 
 		<!-- Spring Test -->
@@ -79,15 +86,14 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.20</version>
-			<scope>provided</scope>
+            <scope>provided</scope>
 		</dependency>
 
 		<!-- OpenCSV -->
 		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
-			<version>5.4</version>
+			<version>5.5.2</version>
 		</dependency>
 
 		<!-- Spring Security -->
