@@ -18,7 +18,7 @@ import br.com.jcaguiar.ecommerce.model.Cidade;
 import br.com.jcaguiar.ecommerce.service.CidadeService;
 
 @RestController
-@RequestMapping("cidade")
+@RequestMapping("**/cidade")
 public class CidadeController {
 	
 	@Autowired
