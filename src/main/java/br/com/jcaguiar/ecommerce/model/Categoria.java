@@ -2,13 +2,9 @@ package br.com.jcaguiar.ecommerce.model;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
+import br.com.jcaguiar.ecommerce.util.DataFormato;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,10 +21,14 @@ final public class Categoria implements Entidade<Short> {
 	
 	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Short id;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Setor setor;
+
+	@Column(unique = true, nullable = false)
 	private String nome;
-	private final LocalDateTime data_cadastro = LocalDateTime.now();
-	
+
+	@Temporal(TemporalType.DATE)
+	@Column(nullable = false)
+	private final LocalDateTime data_cadastro = DataFormato.now();
 }

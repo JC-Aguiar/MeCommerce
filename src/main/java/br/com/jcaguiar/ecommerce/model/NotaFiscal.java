@@ -5,101 +5,95 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
+import br.com.jcaguiar.ecommerce.util.DataFormato;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import br.com.jcaguiar.ecommerce.Proprietario;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "nota_fiscal")
 final public class NotaFiscal implements Entidade<Long>, MasterGET {
 
+	//TODO: descobrir quais campos são oficialmente obrigatórios numa NF!
+
 	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY) @JsonIgnore
-	private Long id;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Pedido pedido;
+	Long id;
 	
 	//INFORMAÇÕES DA NOTA
-	private String arquivoXml;
-	private String numero;
-	private String serie;
-	private boolean nf_saida = true;	//false = ENTRADA[0]; true = SAÍDA[1]
-	private LocalDateTime dataEmissao = LocalDateTime.now();
-	private LocalDateTime dataVencimento;
-	private String nop;
-	private BigDecimal total;
+	@Column(nullable = false, unique = true) String arquivoXml;
+	@Column(nullable = false) String numero;
+	@Column(nullable = false) String serie;
+	boolean nf_saida = true;  //false = ENTRADA[0]; true = SAÍDA[1]
+	@Temporal(TemporalType.DATE) LocalDateTime dataEmissao = DataFormato.now();
+	@Column(nullable = false) LocalDateTime dataVencimento;
+	String nop;
+	@Column(nullable = false) BigDecimal total;
 	
 	//INFORMAÇÕES DO EMISSOR
-	private String emissorNome = Proprietario.NOME;
-	private String emissorDocumento = Proprietario.DOCUMENTO;
-	private String emissorInscEstadual = Proprietario.INSCRICAO_ESTADUAL;
-	private String emissorEndereco = Proprietario.ENDERECO;
-	private String emissorBairro = Proprietario.BAIRRO;
-	private String emissorCep = Proprietario.CEP;
-	private String emissorCidade = Proprietario.CIDADE;
-	private String emissorUf = Proprietario.UF;
-	private String emissorContato = Proprietario.TELEFONE;
+	final String emissorNome = Proprietario.NOME;
+	final String emissorDocumento = Proprietario.DOCUMENTO;
+	final String emissorInscEstadual = Proprietario.INSCRICAO_ESTADUAL;
+	final String emissorEndereco = Proprietario.ENDERECO;
+	final String emissorBairro = Proprietario.BAIRRO;
+	final String emissorCep = Proprietario.CEP;
+	final String emissorCidade = Proprietario.CIDADE;
+	final String emissorUf = Proprietario.UF;
+	final String emissorContato = Proprietario.TELEFONE;
 	
 	//INFORMAÇÕES DO DESTINATÁRIO
-	private String destinatarioNome;
-	private String destinatarioDocumento;
-	private String destinatarioEndereco;
-	private String destinatarioBairro;
-	private String destinatarioCep;
-	private String destinatarioCidade;
-	private String destinatarioUf;
-	private String destinatarioComplemento;
-	private String destinatarioInscEstadual;
+	@ManyToOne(fetch = FetchType.LAZY) Cliente destinatario;
+	@Column(nullable = false) String destinatarioNome;
+	@Column(nullable = false) String destinatarioDocumento;
+	@Column(nullable = false) String destinatarioEndereco;
+	@Column(nullable = false) String destinatarioBairro;
+	@Column(nullable = false) String destinatarioCep;
+	@Column(nullable = false) String destinatarioCidade;
+	@Column(nullable = false) String destinatarioUf;
+	String destinatarioComplemento;
+	String destinatarioInscEstadual;
 	
 	//INFORMAÇÕES DO TRANSPORTADOR
-	@ManyToOne
-	private Transportador transportador;
-	private String transportadorNome;
-	private String transportadorFrete;
-	private String transportadorPlaca;
-	private String transportadorDocumento;
-	private String transportadorEndereco;
-	private String transportadorCidade;
-	private String transportadorUf;
-	private String transportadorInscEstadual;
+	@ManyToOne(fetch = FetchType.LAZY) Transportador transportador;
+	@Column(nullable = false) String transportadorNome;
+	@Column(nullable = false) String transportadorFrete;
+	@Column(nullable = false) String transportadorPlaca;
+	@Column(nullable = false) String transportadorDocumento;
+	@Column(nullable = false) String transportadorEndereco;
+	@Column(nullable = false) String transportadorCidade;
+	@Column(nullable = false) String transportadorUf;
+	String transportadorInscEstadual;
 	
 	//INFORMAÇÕES GERAIS DA MERCADORIA
-	@OneToMany
-	private List<PedidoItem> itens = new ArrayList<>();
-	private String mercadoriaEspecie;
-	private String mercadoriaNumeracao;
-	private double mercadoriaPesoBruto;
-	private double mercadoriaPesoLiquido;
+	@ManyToOne(fetch = FetchType.LAZY) Pedido pedido;
+	@OneToMany(fetch = FetchType.LAZY)  @Column(nullable = false) final List<PedidoItem> mercadoria = new ArrayList<>();
+	@Column(nullable = false) String mercadoriaEspecie;
+	@Column(nullable = false) String mercadoriaNumeracao;
+	@Column(nullable = false) Double mercadoriaPesoBruto;
+	@Column(nullable = false) Double mercadoriaPesoLiquido;
 	
 	//INFORMAÇÕES DE CADA MERCADORIA
-//	private List<String> mercadoriaCodigo = new ArrayList<>();
-//	private List<String> mercadoriaDescricao = new ArrayList<>();
-//	private List<String> mercadoriaNcm = new ArrayList<>();
-//	private List<String> mercadoriaCst = new ArrayList<>();
-//	private List<String> mercadoriaCfop = new ArrayList<>();
-//	private List<String> mercadoriaUn = new ArrayList<>();
-//	private List<Short> mercadoriaQunantidade = new ArrayList<>();
-//	private List<BigDecimal> mercadoriaValorUnitario = new ArrayList<>();
-//	private List<BigDecimal> mercadoriaValorTotal = new ArrayList<>();
-//	private List<BigDecimal> mercadoriaIcmsBase = new ArrayList<>();
-//	private List<BigDecimal> mercadoriaIcmsTotal = new ArrayList<>();
-//	private List<BigDecimal> mercadoriaIcmsAliquota = new ArrayList<>();
-//	private List<BigDecimal> mercadoriaIpi = new ArrayList<>();
-//	private List<BigDecimal> mercadoriaIpiAliquota = new ArrayList<>();
+//	List<String> mercadoriaCodigo = new ArrayList<>();
+//	List<String> mercadoriaDescricao = new ArrayList<>();
+//	List<String> mercadoriaNcm = new ArrayList<>();
+//	List<String> mercadoriaCst = new ArrayList<>();
+//	List<String> mercadoriaCfop = new ArrayList<>();
+//	List<String> mercadoriaUn = new ArrayList<>();
+//	List<Short> mercadoriaQunantidade = new ArrayList<>();
+//	List<BigDecimal> mercadoriaValorUnitario = new ArrayList<>();
+//	List<BigDecimal> mercadoriaValorTotal = new ArrayList<>();
+//	List<BigDecimal> mercadoriaIcmsBase = new ArrayList<>();
+//	List<BigDecimal> mercadoriaIcmsTotal = new ArrayList<>();
+//	List<BigDecimal> mercadoriaIcmsAliquota = new ArrayList<>();
+//	List<BigDecimal> mercadoriaIpi = new ArrayList<>();
+//	List<BigDecimal> mercadoriaIpiAliquota = new ArrayList<>();
 }

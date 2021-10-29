@@ -1,11 +1,6 @@
 package br.com.jcaguiar.ecommerce.model;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,8 +20,13 @@ final public class Estado implements Entidade<Short> {
 	private Short id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
+	@Column(nullable = false)
 	private Pais pais;
+
+	@Column(nullable = false)
 	private String nome;
+
+	@Column(nullable = false)
 	private String sigla;
 
 }

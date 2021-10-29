@@ -1,11 +1,6 @@
 package br.com.jcaguiar.ecommerce.model;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +20,9 @@ final public class Cidade implements Entidade<Integer >{
 	private Integer id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
+	@Column(nullable = false)
 	private Estado estado;
+
+	@Column(nullable = false)
 	private String nome;
 }

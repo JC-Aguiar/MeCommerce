@@ -36,18 +36,28 @@ public class Produto extends EntidadeData<Integer> {
 	private Categoria categoria;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(	name = "produto_marca",
-				joinColumns = { @JoinColumn(name = "produto_id") },
-				inverseJoinColumns = { @JoinColumn(name = "marca_id") })
+	@JoinTable(
+			name = "produto_marca",
+			joinColumns = { @JoinColumn(name = "produto_id") },
+			inverseJoinColumns = { @JoinColumn(name = "marca_id") })
 	final private List<Marca> marca = new ArrayList<>();
+
 	private String nome;
+
 	private String descricao;
+
 	private String modelo;
+
 	private BigDecimal valor;
+
 	private Short estoque;
+
 	private String tamanho;
+
 	private String medidas;
+
 	private String material;
+
 	private String codigo;
 
 	// ATRIBUTOS INDIRETOS -----------------------------------------------------
@@ -59,8 +69,11 @@ public class Produto extends EntidadeData<Integer> {
 
 	@OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	final private List<Comentario> comentario = new ArrayList<>();
+
 	private Integer acessos;
+
 	private Integer votos;
+
 	private Short nota;
 
 	public void addImagem(ImagemProduto img) {
