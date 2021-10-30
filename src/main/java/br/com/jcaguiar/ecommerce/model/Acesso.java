@@ -1,6 +1,5 @@
 package br.com.jcaguiar.ecommerce.model;
 
-import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -23,40 +22,50 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 @AllArgsConstructor
-@Entity(name = "acesso")
+@Entity(name = "**/acesso")
 final public class Acesso implements Entidade<Long> {
 	/**CONCEITO
-	 * 
+	 * Classe que irá capturar e gravar qualquer acesso feito ao servidor
+	 * Esta classe é criada antes mesmo de se identificar o Usuário de fato,
+	 * então o mesmo deverá ser posteriormente inserido.
+	 * Se identificado Canal compatível com algum já utilizado por um Usuário anteriormente
+	 * realizar o vínculo automaticamente
 	 */
-	/**ATRIBUTOS
-	 * 
+
+	/**TODO: CLASSE DISPOSITIVO
+	 * Classe intermediária (ou bi-direcional) entre Acesso e Usuário
+	 * Atributos:
+	 * 		IP
+	 * 		NAVEGADOR
+	 * 		OS
+	 * 		TIPO
 	 */
+
 	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Usuario usuario;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Produto produto;
 	private String url;
 	final private LocalDateTime data_acesso = LocalDateTime.now();
 	private Duration duracao;
-	
+
 	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	/**REPORTAR RELATÓRIO
-	 * Retorna texto dos atributos de acesso no padrão < Console.Log > 
-	 * @return
-	 * @throws ParseException
+	 * Retorna texto dos atributos de acesso no padrão < Console.Log >
+	 * @return String
 	 */
-	public String report() throws ParseException {
+	public String report() {
 		return String.format(
 				"<FILTRO DE ACESSOS> \n"
-				+ "\tACESSO:   %s\n"
-				+ "\tUSER:     %s\n"
-				+ "\tURL:      %s\n"
-				+ "\tDURAÇÃO:  %d.%ds\n"
-				+ "</FILTRO DE ACESSOS> \n", 
+						+ "\tACESSO:   %s\n"
+						+ "\tUSER:     %s\n"
+						+ "\tURL:      %s\n"
+						+ "\tDURAÇÃO:  %d.%ds\n"
+						+ "</FILTRO DE ACESSOS> \n",
 				DataFormato.formatar(data_acesso), usuario.getEmail(), url, duracao.getSeconds(), duracao.getNano());
 	}
 
