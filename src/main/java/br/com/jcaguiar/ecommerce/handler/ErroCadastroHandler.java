@@ -1,8 +1,6 @@
-package br.com.jcaguiar.ecommerce;
+package br.com.jcaguiar.ecommerce.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import br.com.jcaguiar.ecommerce.dto.ErroCadastroPOST;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -13,7 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import br.com.jcaguiar.ecommerce.dto.ErroCadastroPOST;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestControllerAdvice
 public final class ErroCadastroHandler {
@@ -45,6 +44,12 @@ public final class ErroCadastroHandler {
 		
 		//Retornando exceptionDto
 		return listaErroDto;
+	}
+
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(org.postgresql.util.PSQLException.class)
+	public String handler(org.postgresql.util.PSQLException exc) {
+		return "ERRO: E-mail duplicado";
 	}
 	
 }

@@ -1,19 +1,18 @@
 package br.com.jcaguiar.ecommerce.model;
 
+import br.com.jcaguiar.ecommerce.Proprietario;
+import br.com.jcaguiar.ecommerce.projection.MasterGET;
+import br.com.jcaguiar.ecommerce.util.DataFormato;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.*;
-
-import br.com.jcaguiar.ecommerce.util.DataFormato;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import br.com.jcaguiar.ecommerce.Proprietario;
-import br.com.jcaguiar.ecommerce.projection.MasterGET;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -26,7 +25,7 @@ final public class NotaFiscal implements Entidade<Long>, MasterGET {
 
 	//TODO: descobrir quais campos são oficialmente obrigatórios numa NF!
 
-	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY) @JsonIgnore
+	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)  @JsonIgnore
 	Long id;
 	
 	//INFORMAÇÕES DA NOTA
@@ -34,7 +33,7 @@ final public class NotaFiscal implements Entidade<Long>, MasterGET {
 	@Column(nullable = false) String numero;
 	@Column(nullable = false) String serie;
 	boolean nf_saida = true;  //false = ENTRADA[0]; true = SAÍDA[1]
-	@Temporal(TemporalType.DATE) LocalDateTime dataEmissao = DataFormato.now();
+	LocalDate dataEmissao = DataFormato.now().toLocalDate();
 	@Column(nullable = false) LocalDateTime dataVencimento;
 	String nop;
 	@Column(nullable = false) BigDecimal total;
@@ -75,7 +74,8 @@ final public class NotaFiscal implements Entidade<Long>, MasterGET {
 	
 	//INFORMAÇÕES GERAIS DA MERCADORIA
 	@ManyToOne(fetch = FetchType.LAZY) Pedido pedido;
-	@OneToMany(fetch = FetchType.LAZY)  @Column(nullable = false) final List<PedidoItem> mercadoria = new ArrayList<>();
+	@OneToMany(fetch = FetchType.LAZY)
+	@Column(nullable = false) final List<PedidoItem> mercadoria = new ArrayList<>();
 	@Column(nullable = false) String mercadoriaEspecie;
 	@Column(nullable = false) String mercadoriaNumeracao;
 	@Column(nullable = false) Double mercadoriaPesoBruto;

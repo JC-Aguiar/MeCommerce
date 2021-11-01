@@ -1,15 +1,10 @@
 package br.com.jcaguiar.ecommerce.model;
 
-import java.time.LocalDateTime;
+import br.com.jcaguiar.ecommerce.util.DataFormato;
+import lombok.*;
 
 import javax.persistence.*;
-
-import br.com.jcaguiar.ecommerce.util.DataFormato;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -28,7 +23,6 @@ final public class Categoria implements Entidade<Short> {
 	@Column(unique = true, nullable = false)
 	private String nome;
 
-	@Temporal(TemporalType.DATE)
 	@Column(nullable = false)
-	private final LocalDateTime data_cadastro = DataFormato.now();
+	private final LocalDate data_cadastro = DataFormato.now().toLocalDate();
 }

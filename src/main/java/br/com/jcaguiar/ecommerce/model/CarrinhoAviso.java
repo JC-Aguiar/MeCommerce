@@ -14,12 +14,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity(name = "carrinho_aviso")
-public class CarrinhoAviso extends EntidadeData {
+public class CarrinhoAviso extends EntidadeData<Long> {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(nullable = false) String aviso;
+    @Column(nullable = false)
+    String aviso;
 
-    @Temporal(TemporalType.TIME) LocalDateTime data_visto;
+    LocalDateTime data_visto;
 }

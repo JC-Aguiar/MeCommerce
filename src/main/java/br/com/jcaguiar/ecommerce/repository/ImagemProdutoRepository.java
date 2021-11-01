@@ -2,11 +2,11 @@ package br.com.jcaguiar.ecommerce.repository;
 
 import org.springframework.stereotype.Repository;
 
-import br.com.jcaguiar.ecommerce.model.ImagemProduto;
+import br.com.jcaguiar.ecommerce.model.ProdutoImagem;
 
 @Repository
-public interface ImagemProdutoRepository extends MasterRepository<ImagemProduto, Long> {
+public interface ImagemProdutoRepository extends MasterRepository<ProdutoImagem, Long> {
 	
 //	@Query("SELECT ip.imagem FROM imagem_produto ip WHERE ip.id = :produto")
-//	List<ImagemProduto> findByProduto(Produto produto);
+//	List<ProdutoImagem> findByProduto(Produto produto);
 }

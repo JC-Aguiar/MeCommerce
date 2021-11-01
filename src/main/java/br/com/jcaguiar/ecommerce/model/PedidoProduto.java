@@ -1,41 +1,51 @@
 package br.com.jcaguiar.ecommerce.model;
 
-import java.math.BigDecimal;
-
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 import br.com.jcaguiar.ecommerce.util.JsonConverter;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
+import javax.persistence.*;
+import java.math.BigDecimal;
+
+@Data									//TODO: certificar do alerta -> conflito na JPA usando @Data
+@EqualsAndHashCode(callSuper = true)	//TODO: certificar do alerta -> conflito na JPA usando @EqualsAndHashCode
 @SuperBuilder(toBuilder = true)
 @Entity(name = "pedido_produto")
 final public class PedidoProduto extends EntidadeData<Integer> {
-	
+
+	//TODO: certificar de que JsonConveter funciona
+
 	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Integer id;
-	
-	//ATRIBUTOS DIRETOS --------------------------------------------------------
-	@Convert(converter = JsonConverter.class) private Categoria categoria;
-	@Convert(converter = JsonConverter.class) private Marca marca;
-	private String nome;
-	private String descricao; 
-	private String modelo;
-	private BigDecimal valor;
-	private short estoque;
-	private String tamanho;
-	private String medidas;
-	private String material;
-	private String codigo;
-	
-	//ATRIBUTOS INDIRETOS  -----------------------------------------------------
-	@Convert(converter = JsonConverter.class) private Fornecedor fornece;
-	@Convert(converter = JsonConverter.class) private ImagemProduto imagem;
+
+	//------------------------------------------------------------------------------------------------------------------
+	//ATRIBUTOS DIRETOS
+	@Convert(converter = JsonConverter.class)
+	@Column(nullable = false)
+	private Categoria categoria;
+
+	@Convert(converter = JsonConverter.class)
+	@Column(nullable = false)
+	private Marca marca;
+
+	@Column(nullable = false) private String nome;
+	@Column(nullable = false) private String descricao;
+	@Column(nullable = false) private String modelo;
+	@Column(nullable = false) private BigDecimal valor;
+	@Column(nullable = false) private short estoque;
+	@Column(nullable = false) private String tamanho;
+	@Column(nullable = false) private String medidas;
+	@Column(nullable = false) private String material;
+	@Column(nullable = false) private String codigo;
+
+	//------------------------------------------------------------------------------------------------------------------
+	//ATRIBUTOS INDIRETOS
+	@Convert(converter = JsonConverter.class)
+	@Column(nullable = false)
+	private Fornecedor fornece;
+
+	@Convert(converter = JsonConverter.class)
+	@Column(nullable = false)
+	private ProdutoImagem imagem;
 }

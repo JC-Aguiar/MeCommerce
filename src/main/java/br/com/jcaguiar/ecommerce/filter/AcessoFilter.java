@@ -1,21 +1,19 @@
 package br.com.jcaguiar.ecommerce.filter;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.HandlerInterceptor;
-
 import br.com.jcaguiar.ecommerce.model.Acesso;
 import br.com.jcaguiar.ecommerce.model.Produto;
 import br.com.jcaguiar.ecommerce.model.Usuario;
 import br.com.jcaguiar.ecommerce.service.ProdutoService;
 import br.com.jcaguiar.ecommerce.service.UsuarioService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.HandlerInterceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Configuration
 public class AcessoFilter implements HandlerInterceptor {
@@ -39,7 +37,6 @@ public class AcessoFilter implements HandlerInterceptor {
 	@Override
 	final public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
 	throws Exception {
-		
 		Acesso acesso = (Acesso) request.getAttribute("acesso");
 		acesso.setDuracao( Duration.between(acesso.getData_acesso(), LocalDateTime.now()) );
 		System.out.printf( acesso.report() );

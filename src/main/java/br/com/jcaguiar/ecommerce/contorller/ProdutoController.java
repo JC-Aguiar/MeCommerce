@@ -1,42 +1,28 @@
 package br.com.jcaguiar.ecommerce.contorller;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
+import br.com.jcaguiar.ecommerce.Console;
+import br.com.jcaguiar.ecommerce.dto.ProdutoPOST;
+import br.com.jcaguiar.ecommerce.model.*;
+import br.com.jcaguiar.ecommerce.projection.MasterGET;
+import br.com.jcaguiar.ecommerce.projection.ProdutoAdmGET;
+import br.com.jcaguiar.ecommerce.projection.ProdutoUserGET;
+import br.com.jcaguiar.ecommerce.service.*;
+import br.com.jcaguiar.ecommerce.util.LeitorCsv;
+import br.com.jcaguiar.ecommerce.util.TratarString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import br.com.jcaguiar.ecommerce.Console;
-import br.com.jcaguiar.ecommerce.dto.ProdutoPOST;
-import br.com.jcaguiar.ecommerce.model.Categoria;
-import br.com.jcaguiar.ecommerce.model.ImagemProduto;
-import br.com.jcaguiar.ecommerce.model.Marca;
-import br.com.jcaguiar.ecommerce.model.Produto;
-import br.com.jcaguiar.ecommerce.model.Setor;
-import br.com.jcaguiar.ecommerce.projection.MasterGET;
-import br.com.jcaguiar.ecommerce.projection.ProdutoAdmGET;
-import br.com.jcaguiar.ecommerce.projection.ProdutoUserGET;
-import br.com.jcaguiar.ecommerce.service.CategoriaService;
-import br.com.jcaguiar.ecommerce.service.ImagemProdutoService;
-import br.com.jcaguiar.ecommerce.service.MarcaService;
-import br.com.jcaguiar.ecommerce.service.ProdutoService;
-import br.com.jcaguiar.ecommerce.service.SetorService;
-import br.com.jcaguiar.ecommerce.util.LeitorCsv;
-import br.com.jcaguiar.ecommerce.util.TratarString;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping("**/produto")
@@ -50,10 +36,10 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 
 	public ProdutoController(ProdutoService produtoService) {
 		super(
-			Produto.class,
-			ProdutoPOST.class,
-			"produto",
-			produtoService
+				Produto.class,
+				ProdutoPOST.class,
+				"produto",
+				produtoService
 		);
 	}
 	
@@ -170,7 +156,7 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 			Console.log( Arrays.toString(linha) );
 			//Iniciando variáveis
 			final List<Marca> marcasFinal = new ArrayList<>();
-			final List<ImagemProduto> imagensFinais = new ArrayList<>();
+			final List<ProdutoImagem> imagensFinais = new ArrayList<>();
 			final String setor = 		linha[0];		//Coluna A
 			final String categoria = 	linha[1];		//Coluna B
 			final String nome = 		linha[2];		//Coluna C
@@ -217,7 +203,7 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 			//Criando Imagens
 			final List<String> imagensArray = Arrays.asList(imagens.split(","));
 			for(String img : imagensArray) {
-				imagensFinais.add(ImagemProduto.builder()
+				imagensFinais.add(ProdutoImagem.builder()
 					.imagem(img)
 					.produto(produto)
 					.build()

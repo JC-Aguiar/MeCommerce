@@ -1,19 +1,10 @@
 package br.com.jcaguiar.ecommerce.model;
 
+import br.com.jcaguiar.ecommerce.util.DataFormato;
+import lombok.*;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
-
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Setter
@@ -26,11 +17,8 @@ final public class Voto implements Entidade<Integer> {
 	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Cliente cliente;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	private Produto produto;
-	private final LocalDateTime data_voto = LocalDateTime.now();
+	@ManyToOne(fetch = FetchType.LAZY) private Cliente cliente;
+	@ManyToOne(fetch = FetchType.LAZY) private Produto produto;
+	private final LocalDateTime data_voto = DataFormato.now();
 
 }

@@ -1,16 +1,11 @@
 package br.com.jcaguiar.ecommerce.model;
 
-import java.math.BigInteger;
-import java.time.LocalDateTime;
+import lombok.*;
 
 import javax.persistence.*;
-
-import br.com.jcaguiar.ecommerce.util.DataFormato;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -29,8 +24,8 @@ final public class Pagamento implements Entidade<Long> {
 	@Column(nullable = false)
 	private String cartaoNumero;
 
-	@Column(nullable = false) @Temporal(TemporalType.DATE)
-	private LocalDateTime cartaoDataValidade;
+	@Column(nullable = false)
+	private LocalDate cartaoDataValidade;
 
 	@Column(nullable = false)
 	private String cartaoTitular;

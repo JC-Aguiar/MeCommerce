@@ -1,31 +1,28 @@
 package br.com.jcaguiar.ecommerce.security;
 
-import java.util.Optional;
-
+import br.com.jcaguiar.ecommerce.Console;
+import br.com.jcaguiar.ecommerce.model.Usuario;
+import br.com.jcaguiar.ecommerce.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import br.com.jcaguiar.ecommerce.Console;
-import br.com.jcaguiar.ecommerce.model.Usuario;
-import br.com.jcaguiar.ecommerce.service.UsuarioService;
-
+import java.util.Optional;
+/**CONCEITO <br>
+ * Classe responsável pela lógica da autenticação.
+ * A interface UserDetailsService serve justamente para o Spring reconhecer essa classe como tal. <br>
+ *ATRIBUTOS <br>
+ * 	userService:		Classe com os métodos CRUD da entidade Usuário.
+ *
+ */
 @Service
 public class ProvedorLoginService implements UserDetailsService {
-	/**CONCEITO
-	 * 
-	 */
-	/**ATRIBUTOS
-	 * 	userService:		Classe com os métodos CRUD da entidade Usuário.
-	 * 
-	 */
-	@Autowired
-	private UsuarioService userService;
+
+	@Autowired private UsuarioService userService;
 	
-	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	/**CONSULTAR USUÁRIO
+	/**CONSULTAR USUÁRIO <br>
 	 * Método evocado pelo "LoginController" para coletar e retornar o usuário com base no atributo do email.
 	 * Método utilizado pela classe ???.
 	 */
@@ -44,7 +41,5 @@ public class ProvedorLoginService implements UserDetailsService {
 		
 		return usuario.get();
 	}
-	
-	
 
 }

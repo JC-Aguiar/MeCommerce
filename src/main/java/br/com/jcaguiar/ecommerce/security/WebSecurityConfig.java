@@ -86,7 +86,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		http
 			.authorizeRequests().mvcMatchers("/adm/**").hasAnyRole("ADM").and()
-			.authorizeRequests().mvcMatchers("/user/**").hasAnyRole("USER").and()
+			//.authorizeRequests().mvcMatchers("/user/**").hasAnyRole("USER").and() TODO: DESFAZER esse comentário
 			.authorizeRequests().mvcMatchers( HttpMethod.POST, "/login" ).permitAll()
 			.anyRequest().permitAll().and()
 			.csrf().disable()
@@ -96,7 +96,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	/**CONFIGURAR AUTENTICAÇÃO
-	 * Método que configura amdefine autenticação:
+	 * Método que configura e define autenticação:
 	 * 1) Definindo algoritmo de criptografia para senhas
 	 * 2) Definindo ProvedorLoginService como provedor de autenticação, através da interface UserDetailsService
 	 *  

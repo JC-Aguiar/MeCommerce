@@ -1,14 +1,9 @@
 package br.com.jcaguiar.ecommerce.model;
 
-import javax.persistence.*;
-
 import br.com.jcaguiar.ecommerce.util.DataFormato;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -25,6 +20,5 @@ final public class Marca implements Entidade<Short> {
 	@Column(nullable = false, unique = true)
 	private String nome;
 
-	@Temporal(TemporalType.DATE)
 	private LocalDateTime data_cadastro = DataFormato.now();
 }

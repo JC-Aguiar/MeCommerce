@@ -1,28 +1,18 @@
 package br.com.jcaguiar.ecommerce.model;
 
+import br.com.jcaguiar.ecommerce.util.DataFormato;
+import lombok.*;
+
+import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
-
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
-import br.com.jcaguiar.ecommerce.util.DataFormato;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Builder(toBuilder = true)
 @AllArgsConstructor
-@Entity(name = "**/acesso")
+@Entity(name = "acesso")
 final public class Acesso implements Entidade<Long> {
 	/**CONCEITO
 	 * Classe que irá capturar e gravar qualquer acesso feito ao servidor
@@ -48,9 +38,14 @@ final public class Acesso implements Entidade<Long> {
 	private Usuario usuario;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+
 	private Produto produto;
+
+	@Column(nullable = false)
 	private String url;
-	final private LocalDateTime data_acesso = LocalDateTime.now();
+
+	final private LocalDateTime data_acesso = DataFormato.now();
+
 	private Duration duracao;
 
 	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

@@ -1,7 +1,6 @@
 package br.com.jcaguiar.ecommerce.security;
 
-import javax.validation.Valid;
-
+import br.com.jcaguiar.ecommerce.Console;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.jcaguiar.ecommerce.Console;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/login")
@@ -33,6 +32,11 @@ public final class LoginController {
 	
 	@Autowired
 	private TokenService tokenService;
+
+	//TODO: Implementar tratamento ao tentar se logar.
+	// Usuário com credenciais não identificadas no base devem retornam mensagem apropriada
+
+	//TODO: Cria método main avulso para criptografar senhas inseridas diretamente no banco (expostas)
 	
 	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	/**PADRÃO DE AUTENTICAÇÃO
@@ -77,10 +81,9 @@ public final class LoginController {
 			Console.log("Criando Token...");
 			String token = tokenService.newToken(userAutenticado);
 			TokenDto tokenDto = new TokenDto(token, "Bearer");
-			Console.log( String.format(
-					"Token: %s",
-					token 
-			));
+			Console.log(
+					String.format("Token: %s", token)
+			);
 			return ResponseEntity.ok(tokenDto);
 		}
 		catch (AuthenticationException e) {

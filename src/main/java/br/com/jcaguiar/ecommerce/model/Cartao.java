@@ -1,14 +1,9 @@
 package br.com.jcaguiar.ecommerce.model;
 
-import java.time.LocalDateTime;
+import lombok.*;
 
 import javax.persistence.*;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -27,9 +22,8 @@ final public class Cartao implements Entidade<Integer> {
 	@Column(unique = true, nullable = false, length = 20)
 	private String numero;
 
-	@Temporal(TemporalType.DATE)
 	@Column(nullable = false)
-	private LocalDateTime data_validade;
+	private LocalDate data_validade;
 
 	@Column(nullable = false)
 	private String titular;

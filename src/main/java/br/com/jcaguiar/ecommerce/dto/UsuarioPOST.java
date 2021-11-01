@@ -1,13 +1,15 @@
 package br.com.jcaguiar.ecommerce.dto;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
+import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
+@Getter
 final public class UsuarioPOST extends MasterPOST {
 	
-	@NotNull @NotEmpty @Length(min = 7) String email;
-	@NotNull @NotEmpty @Length(min = 6) String senha;
+	@Email String email;
+	@NotBlank @Length(min = 6) String senha;
 
 }
