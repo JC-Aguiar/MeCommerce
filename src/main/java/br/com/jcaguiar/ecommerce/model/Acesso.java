@@ -7,6 +7,25 @@ import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+/**<h1>CONCEITO</h1>
+ * Classe que irá capturar e gravar qualquer acesso feito ao servidor. <br>
+ * Esta classe é criada antes mesmo de se identificar o Usuário de fato,
+ * então o mesmo deverá ser posteriormente inserido. <br>
+ * A meta é vincular todos os IPs a Usuários já cadastrados para mapear pontos de acesso. <br>
+ * realizar o vínculo automaticamente. <br>
+ * <h1>ATRIBUTOS</h1>
+ * <b>Id:</b> identificador Long desse registro no banco de dados <br>
+ * <b>usuario:</b> objeto Usuario que efetuou o acesso <br>
+ * <b>produto:</b> objeto Produto alvo do acesso <br>
+ * <b>url:</b> url String alvo do acesso <br>
+ * <b>data_acesso:</b> data LocalDateTime em que o acesso ocorreu <br>
+ * <b>duracao:</b> duração Duration do processamento quando acessou <br>
+ * <b>ip:</b> identificador de conexão String que realizou o acesso <br>
+ * <b>browser:</b> navegador String que realizou o acesso <br>
+ * <b>os:</b> sistema operacional String que realizou o acesso <br>
+ * <b>hardware:</b> Enum do dispositivo de acesso: PC, NOTEBOOK, TABLET, SMARTPHONE ou OUTROS <br>
+ * @author João MC Aguiar
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,22 +33,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity(name = "acesso")
 final public class Acesso implements Entidade<Long> {
-	/**CONCEITO
-	 * Classe que irá capturar e gravar qualquer acesso feito ao servidor
-	 * Esta classe é criada antes mesmo de se identificar o Usuário de fato,
-	 * então o mesmo deverá ser posteriormente inserido.
-	 * Se identificado Canal compatível com algum já utilizado por um Usuário anteriormente
-	 * realizar o vínculo automaticamente
-	 */
-
-	/**TODO: CLASSE DISPOSITIVO
-	 * Classe intermediária (ou bi-direcional) entre Acesso e Usuário
-	 * Atributos:
-	 * 		IP
-	 * 		NAVEGADOR
-	 * 		OS
-	 * 		TIPO
-	 */
 
 	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -38,30 +41,38 @@ final public class Acesso implements Entidade<Long> {
 	private Usuario usuario;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-
 	private Produto produto;
 
-	@Column(nullable = false)
-	private String url;
-
+	@Column(nullable = false) private String url;
 	final private LocalDateTime data_acesso = DataFormato.now();
 
 	private Duration duracao;
 
-	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	/**REPORTAR RELATÓRIO
-	 * Retorna texto dos atributos de acesso no padrão < Console.Log >
+	@Column(nullable = false) private String ip;
+	private String browser;
+
+	private String os;
+
+	private String hardware;
+
+	/**<hr><h2>REPORTAR RELATÓRIO</h2>
+	 * Retorna texto dos atributos de acesso no padrão Console.Log <br>
 	 * @return String
 	 */
 	public String report() {
 		return String.format(
 				"<FILTRO DE ACESSOS> \n"
-						+ "\tACESSO:   %s\n"
-						+ "\tUSER:     %s\n"
-						+ "\tURL:      %s\n"
-						+ "\tDURAÇÃO:  %d.%ds\n"
-						+ "</FILTRO DE ACESSOS> \n",
-				DataFormato.formatar(data_acesso), usuario.getEmail(), url, duracao.getSeconds(), duracao.getNano());
+					+ "\tACESSO:   %s\n"
+					+ "\tUSER:     %s\n"
+					+ "\tURL:      %s\n"
+					+ "\tDURAÇÃO:  %d.%ds\n"
+					+ "</FILTRO DE ACESSOS> \n",
+					DataFormato.formatar(data_acesso),
+					usuario.getEmail(),
+					url,
+					duracao.getSeconds(),
+					duracao.getNano()
+		);
 	}
 
 }

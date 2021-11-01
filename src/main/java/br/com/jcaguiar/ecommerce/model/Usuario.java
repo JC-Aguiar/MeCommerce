@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 @Entity(name = "usuario")
 public class Usuario extends EntidadeData<Integer> implements UserDetails {
 
@@ -32,11 +33,16 @@ public class Usuario extends EntidadeData<Integer> implements UserDetails {
 	private Carrinho carrinho;
 
 	private static final long serialVersionUID = 1L; //TODO: pra que serve essa variável?
-	@Column(unique=true, nullable=false) private String email;
-	@Column(nullable=false) private String senha;
+
+	@Column(unique=true, nullable=false)
+	private String email;
+
+	@Column(nullable=false)
+	private String senha;
+
 	private boolean empresa = false;
+
 	private String foto;
-	
 
 	@Override
 	public List<Perfil> getAuthorities() {
