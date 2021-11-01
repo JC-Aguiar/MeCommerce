@@ -36,39 +36,34 @@ public final class LoginController {
 	
 	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	/**<hr><h2>PADRÃO DE AUTENTICAÇÃO</h2>
-	 * Através dos parametros enviados no corpo da requisição, o sistema tentará: <br>
+	 * Através dos parametros enviados no corpo da requisição, o sistema tentará: autenticar o usuário(1),
+	 * criar Token tipo Bearer desse usuário(2) e retornar a versão DTO desse token na resposta ao cliente(3) <br>
 	 * <ol>
-	 * <li>Autenticar o usuário </li>
-	 * <li>Criar Token tipo Bearer desse usuário </li>
-	 * <li>Retornar a versão DTO desse token na resposta ao cliente </li>
-	 * </ol>
-	 * Através do try/catch temos 2 resultados finais:<br>
-	 * <li> normal: 	usuário cadastrado e autentivado  (200 OK) </li>
-	 * <li> exception:	usuário não encontrado (400 BAD REQUEST) </li>
-	 * <ol>
-	 * <li> <b>Realizando Autenticação:</b> <br>
-	 * 			UsernamePasswordAuthenticationToken:
-	 * 					Objeto criado através do método "login.compilarDados", da classe LoginDto.
+	 * <li> <b>REALIZANDO AUTENTICAÇÃO</b> <br>
+	 * 			<b>UsernamePasswordAuthenticationToken:</b>
+	 * 					Objeto criado através do método "login.compilarDados", da classe LoginPOST.
 	 * 					Utiliza os atributos "E-mail" e "Senha" para preparar a autenticação. <br>
-	 * 			Authentication:
+	 * 			<b>Authentication:</b>
 	 * 					Através do "AuthenticationManager.authenticate" o sistema consultará
 	 * 					as configurações do Spring, chamando o provedor de autenticação 
 	 * 					"ProvedorLoginService", pois este consta usando a interface "UserDetailsService".
 	 * </li>
-	 * <li> <b>Criando Token:</b> <br>
+	 * <li> <b>CRIANDO TOKEN</b> <br>
 	 * 					Através do método "tokenService.newToken", será gerado um token JWT usando
 	 * 					os dado deste usuário. Ou seja, é criada uma chave (string) criptografada
 	 * 					que representa essa autenticação bem sucedida.
-	 * <li> <b>Retornando DTO:</b> <br>
+	 * <li> <b>RETORNANDO DTO</b> <br>
 	 * 					Com base no token já criado, é definido o tipo de autenticação que o sistema
 	 * 					usa para então gerar o DTO que será retornado ao cliente.
 	 * </li>
 	 * </ol>
-	 */ 
+	 * @param login objeto da classe LoginPOST, contendo e-mail e senha.
+	 * @return token (string) da autenticação para esse usuário.
+	 */
 	@PostMapping
-	public ResponseEntity<?> autenticar(@RequestBody @Valid LoginDto login) {
+	public ResponseEntity<?> autenticar(@RequestBody @Valid LoginPOST login) {
 		Console.log("<LOGIN CONTROLER>", +1);
-		Console.log( String.format("Dados coletados: [e-mail]: %s, [senha]: %s", login.getEmail(), login.getSenha() ));
+		Console.log( String.format("Dados coletados") );
 		try {
 			Console.log("Compilando Autenticação...");
 			UsernamePasswordAuthenticationToken autenticarDados = login.compilarDados();

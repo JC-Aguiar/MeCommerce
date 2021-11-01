@@ -1,16 +1,15 @@
 package br.com.jcaguiar.ecommerce.security;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
+import br.com.jcaguiar.ecommerce.dto.MasterPOST;
+import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import br.com.jcaguiar.ecommerce.dto.MasterPOST;
-import lombok.Getter;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Getter
-public final class LoginDto extends MasterPOST {
+public final class LoginPOST extends MasterPOST {
 	/**CONCEITO
 	 * 
 	 */
