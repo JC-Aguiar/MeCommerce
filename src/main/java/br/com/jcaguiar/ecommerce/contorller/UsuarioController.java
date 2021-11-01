@@ -22,18 +22,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
-/**CONCEITO <br>
+/**<h1>CONCEITO </h1>
  * Classe responsável pelo end-point "/user".<br>
  * Esse end-point irá conter a lógica e tratamento para o CRUD dos cadastros de usuários.<br>
  * Para desfrutar de CRUDs básicos da superclase MasterController, precisa informar os campos genéticos: <br>
  * <li> Entidade principal </li>
  * <li> Tipo do atributo ID da Entidade </li>
  * <li> Classe DTO da Entidade que será enviada ao front-end </li>
- * <br>
- *ATRIBUTOS <br>
- * 	userService: classe com os métodos CRUD da entidade Usuário.<br>
- * 	perfilService: classe com os métodos CRUD da entidade Perfil.<br>
- *
+ *<h1>ATRIBUTOS </h1>
+ * 	<b>userService:</b> classe com os métodos CRUD da entidade Usuário.<br>
+ * 	<b>perfilService:</b> classe com os métodos CRUD da entidade Perfil.<br>
+ *	@author JM Costal Aguiar
  */
 @RestController
 @RequestMapping("user")
@@ -42,7 +41,7 @@ public class UsuarioController extends MasterController<Usuario, Integer, Usuari
 	@Autowired UsuarioService userService;
 	@Autowired PerfilService perfilService;
 
-	/**CONSTRUTOR PADRÃO <br>
+	/**<hr><h2>CONSTRUTOR PADRÃO</h2>
 	 * Irá informar para a superclasse MasterController:<br>
 	 * <li> Classe da Entidade controlada </li>
 	 * <li> Classe do DTO da Entidade para retornar ao front-end </li>
@@ -50,7 +49,7 @@ public class UsuarioController extends MasterController<Usuario, Integer, Usuari
 	 * <li> Classe DAO </li>
 	 * @param userService (UsuarioService) será a Classe de serviço DAO.
 	 */
-	public UsuarioController(UsuarioService userService) {
+		public UsuarioController(UsuarioService userService) {
 		super(
 				Usuario.class,
 				UsuarioPOST.class,

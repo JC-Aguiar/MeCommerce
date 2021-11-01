@@ -1,73 +1,69 @@
 package br.com.jcaguiar.ecommerce.security;
 
-import java.util.Date;
-
+import br.com.jcaguiar.ecommerce.Console;
+import br.com.jcaguiar.ecommerce.model.Usuario;
+import br.com.jcaguiar.ecommerce.service.UsuarioService;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import br.com.jcaguiar.ecommerce.Console;
-import br.com.jcaguiar.ecommerce.model.Usuario;
-import br.com.jcaguiar.ecommerce.service.UsuarioService;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
+import java.util.Date;
 
+/**<h1>CONCEITO</h1>
+ * Classe destinada à criação e decodificação de tokens de autenticação formato JWT (Jason Web Tokens) <br>
+ * <h1>TRIBUTOS</h1>
+ * 	<b>segredo:</b>	assinatura de validação dos tokens <br>
+ * 	<b>tempoLogin:</b> validade do token após criado (em milisegundos) <br>
+ * 	<b>userService:</b> classe DAO para realizar CRUD 	 <br>
+ * 	@author JM Costal Aguiar
+ */
 @Service
 public final class TokenService {
-	/**CONCEITO
-	 * Classe destinada à criação e decodificação de tokens de autenticação formato JWT (Jason Web Tokens)
-	 * @author JM Costal Aguiar
-	 *
-	 */
-	/**ATRIBUTOS
-	 * 	segredo:		assinatura de validação dos tokens
-	 * 	tempoLogin:		validade do token após criado (em milisegundos)
-	 */
-	private String segredo = "AAAAB3NzaC1yc2EAAAADAQABAAABAQCu9uKkd/f23+CSmwp/Sx72HkRu1wW5Qn238DRzTW7IZWJi2IruikgxXewhaL9ncS8Bm437ScfmjjewLZuVxyRwMs2vBCb4yuXvYl4v2gd+vjw3QdlpHOplTE3BzA1LPco8vVEevBO9j8vFJoHcYjdwnhaOVqFl2Nm+I2WEBFVlnJtWV/zmdmVZxrCxvYEuZ1kLigfA9dtwtOEWrvcieIg132rB73HgmnjhKUKjBjbXzDEW0drgUnjt/Q8Jr/ix6IgPX6F71V6bwkJb0POv/rOHXOnh8gshgZQMgvrQ9/IFk6Ko+FBtMenqIeEZyNnB0chwo2SPAyOdo5w9y6XxcIQ9 ";
-	private int tempoLogin = 1800000;
-	
+
+	final static private String SEGREDO = "AAAAB3NzaC1yc2EAAAADAQABAAABAQCu9uKkd/f23+CSmwp/Sx72HkRu1wW5Qn238DRzTW7IZWJi2IruikgxXewhaL9ncS8Bm437ScfmjjewLZuVxyRwMs2vBCb4yuXvYl4v2gd+vjw3QdlpHOplTE3BzA1LPco8vVEevBO9j8vFJoHcYjdwnhaOVqFl2Nm+I2WEBFVlnJtWV/zmdmVZxrCxvYEuZ1kLigfA9dtwtOEWrvcieIg132rB73HgmnjhKUKjBjbXzDEW0drgUnjt/Q8Jr/ix6IgPX6F71V6bwkJb0POv/rOHXOnh8gshgZQMgvrQ9/IFk6Ko+FBtMenqIeEZyNnB0chwo2SPAyOdo5w9y6XxcIQ9 ";
+	final static private int TEMPO_LOGIN = 1800000;
+
 	@Autowired private UsuarioService userService;
 	
-	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	/**CRIANDO TOKEN APÓS LOGIN
-	 * Uma vez autenticado, o token JWT será gerado a este usuário
-	 * 1) Coletando usuário
-	 * 			Authentication:		Classe gerenciada pelo AuthenticationManager (no LoginController) e quando esta mesma
-	 * 								classe é instanciada, recebe a email e senha do usuário.
-	 * 			getPrincipal:		Método que retorna a classe usuário que está salvo no Authentication.
-	 * 
-	 * 2) Definindo datas
-	 * 			hoje:				Data atual.
-	 * 			validade:			Data de expiração do token para esse login.
-	 * 
-	 * 3) Classe Jwt para criação do token:
-	 * 			builder:			Preenchendo campos do construtor Jwts.
-	 * 			setIssuer:			Nome do emissor.
-	 * 			setSubject:			Identificador único (id) do objeto de login (usuário) em formato String.
-	 * 			setIssuedAt:		Data emissáo do token.
-	 * 			setExpiration:		Data de expiração de uso do token.
-	 * 			signWith:			Recebe método de criptografia e assinatura secreta da API.
-	 * 			SignatureAlgorithm:	Método estático do Jwts com criptorgrafias disponíveis.
-	 * 			compact:			Criar token.
-	 * 
-	 * @param userAutenticado
-	 * @return
+	/**<hr><h2>CRIANDO TOKEN APÓS LOGIN</h2>
+	 * Uma vez autenticado, o token JWT será gerado a este usuário <br>
+	 * <ol>
+	 * <li> <b>COLETANDO USUÁRIO</b> <br>
+	 * 			<b>Authentication:</b>		Classe gerenciada pelo AuthenticationManager (no LoginController) e quando esta mesma
+	 * 										classe é instanciada, recebe a email e senha do usuário. <br>
+	 * 			<b>getPrincipal:</b>		Método que retorna a classe usuário que está salvo no Authentication.
+	 * </li>
+	 * <li> <b>DEFININDO DATAS</b> <br>
+	 * 			<b>hoje:</b>				Data atual. <br>
+	 * 			<b>validade:</b>			Data de expiração do token para esse login. <br>
+	 * </li>
+	 * <li> <b>CLASSSE JWT PARA CRIAÇÃO DO TOKEN</b> <br>
+	 * 			<b>builder:</b>				Preenchendo campos do construtor Jwts. <br>
+	 * 			<b>setIssuer:</b>			Nome do emissor. <br>
+	 * 			<b>setSubject:</b>			Identificador único (id) do objeto de login (usuário) em formato String. <br>
+	 * 			<b>setIssuedAt:</b>			Data emissáo do token. <br>
+	 * 			<b>setExpiration:</b>		Data de expiração de uso do token. <br>
+	 * 			<b>signWith:</b>			Recebe método de criptografia e assinatura secreta da API. <br>
+	 * 			<b>SignatureAlgorithm:</b>	Método estático do Jwts com criptorgrafias disponíveis. <br>
+	 * 			<b>compact:</b>				Criar token. <br>
+	 * </li>
+	 * </ol>
+	 * @param userAutenticado da CLasse Authentication. Contendo e-mail e senha.
+	 * @return String token
 	 */
 	public String newToken(Authentication userAutenticado) {
 		Console.log("<TOKEN SERVICE>", +1);
 		try {
 			Usuario usuario = userService.findByEmail( userAutenticado.getName() ).get();
 			Date hoje = new Date();
-			Date validade = new Date(hoje.getTime() + tempoLogin);
+			Date validade = new Date(hoje.getTime() + TEMPO_LOGIN);
 			String token = Jwts.builder()
 					.setIssuer("API ECOMMERCE")
 					.setSubject( usuario.getId().toString() )
 					.setIssuedAt(hoje)
 					.setExpiration(validade)
-					.signWith(SignatureAlgorithm.HS256,segredo)
+					.signWith(SignatureAlgorithm.HS256, SEGREDO)
 					.compact();
 			Console.log("Token JWT criado com sucesso.");
 			return token;
@@ -81,20 +77,20 @@ public final class TokenService {
 		}
 	}
 
-	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	/**VALIDANDO TOKEN DO REQUEST
-	 * 1) Tentar decodificar token do usuário
-	 * 		Jwts:				Classe responsável pelas interfaces Jwt.
-	 * 		parser: 			Decodificador de token.
-	 * 		setSigningKey:	 	Definir assinatura do decodificador, 
-	 * 				  			(tanto o token quanto o sistema precisam ser iguais).
-	 * 		parseClaimsJws: 	Converta o playload (usuário).
-	 *
+	/**<hr><h2>VALIDANDO TOKEN DO REQUEST</h2>
+	 * Tentar decodificar token do usuário <br><br>
+	 * 		<b>Jwts:</b>				Classe responsável pelas interfaces Jwt. <br>
+	 * 		<b>parser:</b> 				Decodificado o token. <br>
+	 * 		<b>setSigningKey:</b>	 	Define assinatura do decodificador, (tanto o token quanto
+	 * 									o sistema devem ser iguais). <br>
+	 * 		<b>parseClaimsJws:</b>	 	Converta o playload (usuário). <br>
+	 * @param token String do token propriamente dito.
+	 * @return ID do usuário ou -1, caso o usuário não seja indicificado e/ou algum erro ocorreu
 	 */
 	public int validar(String token) {
 		try {
 			//Processando token Jwt
-			String userIdString = Jwts.parser().setSigningKey(segredo).parseClaimsJws(token).getBody().getSubject();
+			String userIdString = Jwts.parser().setSigningKey(SEGREDO).parseClaimsJws(token).getBody().getSubject();
 			Integer userId = Integer.parseInt(userIdString); 
 			Console.log("Usuário logado com sucesso");
 			return userId;
