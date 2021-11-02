@@ -9,7 +9,11 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * TODO: terminar javadoc
+ *
+ * @author JM Costal Aguiar
+ */
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -67,6 +71,7 @@ public class Produto extends EntidadeData<Integer> {
 				cascade = CascadeType.ALL,
 				fetch = FetchType.LAZY)
 	final private List<Comentario> comentario = new ArrayList<>();
+
 	private Integer acessos;
 
 	private Integer votos;

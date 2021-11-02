@@ -10,7 +10,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * TODO: terminar javadoc
+ *
+ * @author JM Costal Aguiar
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,16 +24,22 @@ import java.util.List;
 @Entity(name = "usuario")
 public class Usuario extends EntidadeData<Integer> implements UserDetails {
 
-	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Integer id;
 	
-	@OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(	mappedBy = "usuario",
+				fetch = FetchType.EAGER,
+				cascade = CascadeType.ALL,
+				orphanRemoval = true)
 	private List<Perfil> perfil;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	private Cliente cliente;
 	
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(	cascade = CascadeType.ALL,
+			  	fetch = FetchType.LAZY,
+				orphanRemoval = true)
 	private Carrinho carrinho;
 
 	private static final long serialVersionUID = 1L; //TODO: pra que serve essa variável?

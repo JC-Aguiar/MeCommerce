@@ -7,7 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
+/**
+ * TODO: terminar javadoc
+ *
+ * @author JM Costal Aguiar
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,7 +19,8 @@ import javax.persistence.*;
 @Entity(name = "produto_imagem")
 final public class ProdutoImagem implements Entidade<Long> {
 
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)

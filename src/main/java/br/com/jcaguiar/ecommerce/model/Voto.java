@@ -5,7 +5,11 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
+/**
+ * TODO: terminar javadoc
+ *
+ * @author JM Costal Aguiar
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,11 +18,16 @@ import java.time.LocalDateTime;
 @Entity(name = "voto")
 final public class Voto implements Entidade<Integer> {
 	
-	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@ManyToOne(fetch = FetchType.LAZY) private Cliente cliente;
-	@ManyToOne(fetch = FetchType.LAZY) private Produto produto;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Cliente cliente;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Produto produto;
+
 	private final LocalDateTime data_voto = DataFormato.now();
 
 }

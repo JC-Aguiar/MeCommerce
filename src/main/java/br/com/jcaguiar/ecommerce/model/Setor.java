@@ -1,13 +1,13 @@
 package br.com.jcaguiar.ecommerce.model;
 
+import lombok.*;
+
 import javax.persistence.*;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+/**
+ * TODO: terminar javadoc
+ *
+ * @author JM Costal Aguiar
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +16,8 @@ import lombok.Setter;
 @Entity(name = "setor")
 final public class Setor implements Entidade<Short> {
 	
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Short id;
 
 	@Column(nullable = false, unique = true)

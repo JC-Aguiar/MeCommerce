@@ -8,7 +8,11 @@ import lombok.experimental.SuperBuilder;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
-
+/**
+ * TODO: terminar javadoc
+ *
+ * @author JM Costal Aguiar
+ */
 @Data									//TODO: certificar do alerta -> conflito na JPA usando @Data
 @EqualsAndHashCode(callSuper = true)	//TODO: certificar do alerta -> conflito na JPA usando @EqualsAndHashCode
 @SuperBuilder(toBuilder = true)

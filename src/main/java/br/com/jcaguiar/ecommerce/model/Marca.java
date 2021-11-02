@@ -5,7 +5,9 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
+/**
+ * TODO: finalizar javadoc
+ */
 @Getter
 @Setter
 @NoArgsConstructor

@@ -1,12 +1,15 @@
 package br.com.jcaguiar.ecommerce.model;
 
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+/**
+ * TODO: finalizar javadoc
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,8 +17,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity(name = "pagamento")
 final public class Pagamento implements Entidade<Long> {
-	
-	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+	/**
+	 * TODO: como funciona um pagamento oficialmente? O objeto é criado e fica aguardando o comprovante,
+	 * 		 para depois informar a data? Ou tudo deve ser criado atomicamente?
+	 */
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -40,18 +49,18 @@ final public class Pagamento implements Entidade<Long> {
 	private String cartaoToken;
 
 	@Column(nullable = false)
-	private byte parcelas;
+	private Byte parcelas;
 
 	@Column(nullable = false)
 	private BigInteger subtotal;
 
 	private LocalDateTime data_pagamento;  //nullable?
-	//TODO: como funciona um pagamento (oficialmente)
-	// O objeto é criado e fica aguardando o comprovante, para depois informar a data?
-	// Ou tudo deve ser criado atomicamente?
 
-	
-	public void setPagamento(Cartao cartao, BigInteger subtotal, String token, byte parcelas) {
+
+	/**
+	 * TODO: esse método ainda é necessário?
+	 */
+	public void setPagamento(@NotNull Cartao cartao, BigInteger subtotal, String token, Byte parcelas) {
 		this.cartaoNumero = cartao.getNumero();
 		this.cartaoDataValidade = cartao. getData_validade();
 		this.cartaoTitular = cartao.getTitular();

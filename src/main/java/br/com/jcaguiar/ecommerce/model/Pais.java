@@ -4,6 +4,11 @@ import lombok.*;
 
 import javax.persistence.*;
 
+/**
+ * TODO: terminar javadoc
+ *
+ * @author JM Costal Aguiar
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,7 +20,10 @@ final public class Pais implements Entidade<Short> {
 	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Short id;
 
-	@Column(nullable = false, unique = true) private String nome;
-	@Column(nullable = false, unique = true) private String sigla;
+	@Column(nullable = false, unique = true)
+	private String nome;
+
+	@Column(nullable = false, unique = true)
+	private String sigla;
 
 }
