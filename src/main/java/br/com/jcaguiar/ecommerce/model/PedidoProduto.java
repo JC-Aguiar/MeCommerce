@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data									//TODO: certificar do alerta -> conflito na JPA usando @Data
 @EqualsAndHashCode(callSuper = true)	//TODO: certificar do alerta -> conflito na JPA usando @EqualsAndHashCode
@@ -16,36 +17,51 @@ final public class PedidoProduto extends EntidadeData<Integer> {
 
 	//TODO: certificar de que JsonConveter funciona
 
-	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
-	protected Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-	//------------------------------------------------------------------------------------------------------------------
 	//ATRIBUTOS DIRETOS
+	@Column(nullable = false)
+	private String categoria;
+
 	@Convert(converter = JsonConverter.class)
 	@Column(nullable = false)
-	private Categoria categoria;
+	private List<String> marca;
 
-	@Convert(converter = JsonConverter.class)
 	@Column(nullable = false)
-	private Marca marca;
+	private String nome;
 
-	@Column(nullable = false) private String nome;
-	@Column(nullable = false) private String descricao;
-	@Column(nullable = false) private String modelo;
-	@Column(nullable = false) private BigDecimal valor;
-	@Column(nullable = false) private short estoque;
-	@Column(nullable = false) private String tamanho;
-	@Column(nullable = false) private String medidas;
-	@Column(nullable = false) private String material;
-	@Column(nullable = false) private String codigo;
+	@Column(nullable = false)
+	private String descricao;
 
-	//------------------------------------------------------------------------------------------------------------------
+	@Column(nullable = false)
+	private String modelo;
+
+	@Column(nullable = false)
+	private BigDecimal valor;
+
+	@Column(nullable = false)
+	private short estoque;
+
+	@Column(nullable = false)
+	private String tamanho;
+
+	@Column(nullable = false)
+	private String medidas;
+
+	@Column(nullable = false)
+	private String material;
+
+	@Column(nullable = false)
+	private String codigo;
+
 	//ATRIBUTOS INDIRETOS
 	@Convert(converter = JsonConverter.class)
 	@Column(nullable = false)
-	private Fornecedor fornece;
+	private List<String> fornecedor;
 
 	@Convert(converter = JsonConverter.class)
 	@Column(nullable = false)
-	private ProdutoImagem imagem;
+	private List<String> imagens;
 }

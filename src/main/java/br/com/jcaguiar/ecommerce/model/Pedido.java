@@ -69,7 +69,7 @@ final public class Pedido extends EntidadeData<Long> {
 	private List<PedidoItem> itens = new ArrayList<>();
 
 	//INFORMAÇÕES DO COMPRADOR
-	//TODO: representar estrutura de armazenamento
+	//TODO: repensar estrutura de armazenamento
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Cliente cliente;
 

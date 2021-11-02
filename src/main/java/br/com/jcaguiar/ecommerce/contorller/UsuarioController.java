@@ -49,7 +49,7 @@ public class UsuarioController extends MasterController<Usuario, Integer, Usuari
 	 * <li> Classe DAO </li>
 	 * @param userService (UsuarioService) será a Classe de serviço DAO.
 	 */
-		public UsuarioController(UsuarioService userService) {
+	public UsuarioController(UsuarioService userService) {
 		super(
 				Usuario.class,
 				UsuarioPOST.class,

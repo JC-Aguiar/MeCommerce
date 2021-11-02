@@ -26,15 +26,18 @@ import javax.validation.Valid;
 @RequestMapping("/login")
 public final class LoginController {
 
+	/**TODO: <br>
+	 * 		<ol>
+	 *  	<li> Implementar tratamento ao tentar se logar.
+	 * 		Usuário com credenciais não identificadas no base devem retornam mensagem apropriada </li>
+	 * 		<li> Cria método main avulso para criptografar senhas inseridas diretamente no banco (expostas)</li>
+	 * 		</ol>
+	 */
+
 	@Autowired private AuthenticationManager gerenteLogin;
 	@Autowired private TokenService tokenService;
 
-	//TODO: Implementar tratamento ao tentar se logar.
-	// Usuário com credenciais não identificadas no base devem retornam mensagem apropriada
-
-	//TODO: Cria método main avulso para criptografar senhas inseridas diretamente no banco (expostas)
 	
-	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	/**<hr><h2>PADRÃO DE AUTENTICAÇÃO</h2>
 	 * Através dos parametros enviados no corpo da requisição, o sistema tentará: autenticar o usuário(1),
 	 * criar Token tipo Bearer desse usuário(2) e retornar a versão DTO desse token na resposta ao cliente(3) <br>
