@@ -176,6 +176,7 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 			final char tamanhoFinal = TratarString.sigla(tamanho);	
 			//Criando Setor
 			final Setor setorFinal = setorService.validarByNome(setor);
+			Console.log("setorFinal: " + setorFinal.getNome()); // MODA
 			//Criando Categoria
 			final Categoria categoriaFinal = categoriaService
 					.validarByNome(setorFinal, categoria);	

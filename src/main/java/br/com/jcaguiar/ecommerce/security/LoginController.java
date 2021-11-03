@@ -66,14 +66,18 @@ public final class LoginController {
 	@PostMapping
 	public ResponseEntity<?> autenticar(@RequestBody @Valid LoginPOST login) {
 		Console.log("<LOGIN CONTROLER>", +1);
-		Console.log( String.format("Dados coletados") );
 		try {
+			//Criando Spring Token de autenticação
 			Console.log("Compilando Autenticação...");
 			UsernamePasswordAuthenticationToken autenticarDados = login.compilarDados();
+			//Transformando Spring Token em objeto Authentication
+			//A classe ProvedorAutorizadorService foi configurada para realizar método próprio no lugar do "authenticate".
 			Console.log("Realizando Autenticação...");
 			Authentication userAutenticado = gerenteLogin.authenticate(autenticarDados);
+			//Gerando JWT á partir do Authentication
 			Console.log("Criando Token...");
 			String token = tokenService.newToken(userAutenticado);
+			//Convertendo JWT para DTO
 			TokenDto tokenDto = new TokenDto(token, "Bearer");
 			Console.log(
 					String.format("Token: %s", token)

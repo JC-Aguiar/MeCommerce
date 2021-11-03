@@ -30,7 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired private TokenService tokenService;
 	@Autowired private ProvedorLoginService provedorLoginService;
-	@Autowired private ProvedorAutorizarService provedorAuth;
+	@Autowired private ProvedorAutorizadorService provedorAuth;
 	@Autowired private UsuarioService userService;
  
 	/**<hr>

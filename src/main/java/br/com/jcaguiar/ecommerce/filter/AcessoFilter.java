@@ -24,7 +24,6 @@ public class AcessoFilter implements HandlerInterceptor {
 	@Override
 	final public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 	throws Exception {
-		//final Sort ordene = Sort.by("id").ascending();
 		final Usuario USUARIO = getUsuarioLogin(request);
 		final Acesso ACESSO = Acesso.builder()
 				.usuario(USUARIO)

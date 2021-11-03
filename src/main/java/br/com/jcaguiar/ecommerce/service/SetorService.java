@@ -1,14 +1,13 @@
 package br.com.jcaguiar.ecommerce.service;
 
-import java.util.List;
-
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.model.Setor;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
 import br.com.jcaguiar.ecommerce.repository.SetorRepository;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class SetorService extends MasterService<Setor, Short> {
@@ -25,11 +24,13 @@ public class SetorService extends MasterService<Setor, Short> {
 			setor = Setor.builder()
 					.nome(nome)
 					.build();
-			Console.log(String.format("Novo Setor criado: %s", nome));
+			Console.log(String.format(
+					"Novo Setor criado: %s", nome));
 		}
 		else {
 			setor = setores.get(0);
-			Console.log(String.format("Setor %s Identificado", nome));
+			Console.log(String.format(
+					"Setor %s Identificado", nome));
 		}
 		Console.log("</SETOR-SERVICE>", -1);
 		return setor;

@@ -20,7 +20,7 @@ import java.util.List;
  * @author JM Costal Aguiar
  */
 @Component
-public class ProvedorAutorizarService implements AuthenticationProvider {
+public class ProvedorAutorizadorService implements AuthenticationProvider {
 
     @Autowired private UsuarioService userService;
 
@@ -32,17 +32,15 @@ public class ProvedorAutorizarService implements AuthenticationProvider {
      */
     @Override
     public Authentication authenticate(Authentication auth) throws AuthenticationException {
-    	Console.log("<FILTRO AUTORIZAÇÃO>", +1);
+    	Console.log("<PROVEDOR AUTENTICAÇÃO>", +1);
     	String email = auth.getName();
         String senha = auth.getCredentials().toString();
         List<Perfil> perfis = (List<Perfil>) auth.getAuthorities();
-        Console.log("E-mail do Usuário: " + email);
-        Console.log("Senha do Usuário: " + senha);
         Console.log("Perfils do Usuário: ");
         for(Perfil perfil : perfis) {
-        	Console.log(">" + perfil.getAuthority());
+        	Console.log("   " + perfil.getAuthority());
         }
-        Console.log("</FILTRO AUTORIZAÇÃO>", -1);
+        Console.log("</PROVEDOR AUTENTICAÇÃO>", -1);
         return new UsernamePasswordAuthenticationToken(email, senha, perfis);
         //TODO: tratamento correto das possíveis excepções!
         // throw new BadCredentialsException("Este usuário está desativado.");

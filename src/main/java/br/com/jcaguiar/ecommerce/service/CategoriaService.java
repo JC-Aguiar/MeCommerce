@@ -1,15 +1,14 @@
 package br.com.jcaguiar.ecommerce.service;
 
-import java.util.List;
-
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.model.Categoria;
 import br.com.jcaguiar.ecommerce.model.Setor;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
 import br.com.jcaguiar.ecommerce.repository.CategoriaRepository;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CategoriaService extends MasterService<Categoria, Short> {

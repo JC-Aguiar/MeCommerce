@@ -2,6 +2,8 @@ package br.com.jcaguiar.ecommerce.contorller;
 
 import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.dto.UsuarioPOST;
+import br.com.jcaguiar.ecommerce.exception.EmailDuplicadoException;
+import br.com.jcaguiar.ecommerce.exception.ErroInesperado;
 import br.com.jcaguiar.ecommerce.model.Perfil;
 import br.com.jcaguiar.ecommerce.model.PerfilTipo;
 import br.com.jcaguiar.ecommerce.model.Usuario;
@@ -9,6 +11,7 @@ import br.com.jcaguiar.ecommerce.projection.UsuarioGET;
 import br.com.jcaguiar.ecommerce.service.PerfilService;
 import br.com.jcaguiar.ecommerce.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
@@ -61,26 +65,32 @@ public class UsuarioController extends MasterController<Usuario, Integer, Usuari
 
 	@PostMapping("/add")
 	@Transactional
-	public ResponseEntity<?> add(@Valid @RequestBody UsuarioPOST userPost) {
-		Console.log("Nova solicitação para cadastro de usuário.");
-		//Convertendo DTO para Entidade
-		Usuario user = conversorEntidade(userPost);
-		//Encriptando senha
-		final BCryptPasswordEncoder ENCRIPT = new BCryptPasswordEncoder();
-		user.setSenha( ENCRIPT.encode(user.getSenha()) );
-		//Salvando novo Usuario
-		userService.salvar(user);
-		//Salvando Perfil do Usuário
-		Perfil perfil = Perfil.builder()
-				.nome(PerfilTipo.USER)
-				.usuario(user)
-				.ativo(true)
-				.build();
-		perfilService.salvar(perfil);
-		//Convertendo Entidade para DTO
-		UsuarioGET userGet = (UsuarioGET) conversorDto(user, UsuarioGET.class);
-		//Retornando ao front-end
-		return new ResponseEntity<>(userGet, HttpStatus.CREATED);
+	public ResponseEntity<?> add(@Valid @RequestBody UsuarioPOST userPost) throws EmailDuplicadoException, Exception {
+		try {
+			Console.log("Nova solicitação para cadastro de usuário.");
+			//Convertendo DTO para Entidade
+			Usuario user = conversorEntidade(userPost);
+			//Encriptando senha
+			final BCryptPasswordEncoder ENCRIPT = new BCryptPasswordEncoder();
+			user.setSenha( ENCRIPT.encode(user.getSenha()) );
+			//Salvando novo Usuario
+			userService.salvar(user);
+			//Salvando Perfil do Usuário
+			Perfil perfil = Perfil.builder()
+					.nome(PerfilTipo.USER)
+					.usuario(user)
+					.ativo(true)
+					.build();
+			perfilService.salvar(perfil);
+			//Convertendo Entidade para DTO
+			UsuarioGET userGet = (UsuarioGET) conversorDto(user, UsuarioGET.class);
+			//Retornando ao front-end
+			return new ResponseEntity<>(userGet, HttpStatus.CREATED);
+		} catch (IllegalArgumentException e) {
+			throw new ErroInesperado("Erro inesperado. Algum dos dados enviados constam inválidos");
+		} catch (PersistenceException | DataIntegrityViolationException e) {
+			throw new EmailDuplicadoException("E-mail já consta em uso. Favor tentar novamente com outro.");
+		}
 	}
 
 	@Override
