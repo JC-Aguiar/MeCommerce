@@ -1,16 +1,15 @@
 package br.com.jcaguiar.ecommerce.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.model.Marca;
 import br.com.jcaguiar.ecommerce.model.Produto;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
 import br.com.jcaguiar.ecommerce.repository.MarcaRepository;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class MarcaService extends MasterService<Marca, Short> {
@@ -109,6 +108,7 @@ public class MarcaService extends MasterService<Marca, Short> {
 			marca = Marca.builder()
 					.nome(nome)
 					.build();
+			JPA_REPO.saveAndFlush(marca);
 			Console.log(String.format("Criada nova Marca: %s", nome));
 		}
 		else {

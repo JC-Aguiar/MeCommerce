@@ -9,6 +9,8 @@ import br.com.jcaguiar.ecommerce.projection.ProdutoUserGET;
 import br.com.jcaguiar.ecommerce.service.*;
 import br.com.jcaguiar.ecommerce.util.LeitorCsv;
 import br.com.jcaguiar.ecommerce.util.TratarString;
+import org.modelmapper.ConfigurationException;
+import org.modelmapper.MappingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -144,91 +146,102 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 	@PostMapping("/file")
 	@Transactional
 	public ResponseEntity<?> addCsv(@RequestBody String fileName) {
-		Console.log("<IMPORTANDO-CSV>", +1);
-		//Inicializando variáveis
-		final LeitorCsv csv = new LeitorCsv(fileName);
-		final List<String[]> arquivo = csv.getArquivo();
-		final List<Produto> produtos = new ArrayList<>();
-		final List<MasterGET> produtosGET = new ArrayList<>();
-		Console.log("Coletando planilha. Total de: " + arquivo.size() + " linhas");
-		//Iterando linhas da planilha csv
-		for(String[] linha : arquivo) {
-			Console.log( Arrays.toString(linha) );
-			//Iniciando variáveis
-			final List<Marca> marcasFinal = new ArrayList<>();
-			final List<ProdutoImagem> imagensFinais = new ArrayList<>();
-			final String setor = 		linha[0];		//Coluna A
-			final String categoria = 	linha[1];		//Coluna B
-			final String nome = 		linha[2];		//Coluna C
-			final String descricao = 	linha[3];		//Coluna D
-			final String marcas = 		linha[4];		//Coluna E
-			final String modelo = 		linha[5];		//Coluna F
-			final String preco = 		linha[6];		//Coluna G
-			final String estoque = 		linha[7];		//Coluna H
-			final String materiais = 	linha[8];		//Coluna I
-			final String medidas = 		linha[9];		//Coluna J
-			final String tamanho = 		linha[10];		//Coluna K
-			final String ean = 			linha[11];		//Coluna L
-			final String imagens = 		linha[12];		//Coluna M
-			//Tratando campos numéricos
-			final BigDecimal precoFinal = TratarString.paraBigDecimal(preco);
-			final short estoqueFinal = Short.parseShort(estoque);
-			final char tamanhoFinal = TratarString.sigla(tamanho);	
-			//Criando Setor
-			final Setor setorFinal = setorService.validarByNome(setor);
-			Console.log("setorFinal: " + setorFinal.getNome()); // MODA
-			//Criando Categoria
-			final Categoria categoriaFinal = categoriaService
-					.validarByNome(setorFinal, categoria);	
-			//Criando Marcas
-			final List<String> marcasArray = Arrays.asList(
-					TratarString.getDepois(marcas,":")
-					.split(",")
-			);
-			for(String mc : marcasArray) {
-				marcasFinal.add( marcaService.validarByNome(mc) );
-			}
-			//Criando Produtos
-			Produto produto = Produto.builder()
-					.categoria(categoriaFinal)
-					.nome(nome)
-					.descricao(descricao)
-					.modelo(modelo)
-					.valor(precoFinal)
-					.estoque(estoqueFinal)
-					.material(materiais)
-					.medidas(medidas)
-					.tamanho( String.valueOf(tamanhoFinal) )
-					.codigo(ean)
-					.build();
-			//Criando Imagens
-			final List<String> imagensArray = Arrays.asList(imagens.split(","));
-			for(String img : imagensArray) {
-				imagensFinais.add(ProdutoImagem.builder()
-					.imagem(img)
-					.produto(produto)
-					.build()
+		try {
+			Console.log("<IMPORTANDO-CSV>", +1);
+			//Inicializando variáveis
+			final LeitorCsv csv = new LeitorCsv(fileName);
+			final List<String[]> arquivo = csv.getArquivo();
+			final List<Produto> produtos = new ArrayList<>();
+			final List<MasterGET> produtosGET = new ArrayList<>();
+			Console.log("Planilha coletada. Total de: " + arquivo.size() + " linhas");
+			//Iterando linhas da planilha csv
+			for(String[] linha : arquivo) {
+				Console.log( Arrays.toString(linha) );
+				//Iniciando variáveis
+				final List<Marca> marcasFinal = new ArrayList<>();
+				final List<ProdutoImagem> imagensFinais = new ArrayList<>();
+				final String setor = 		linha[0];		//Coluna A
+				final String categoria = 	linha[1];		//Coluna B
+				final String nome = 		linha[2];		//Coluna C
+				final String descricao = 	linha[3];		//Coluna D
+				final String marcas = 		linha[4];		//Coluna E
+				final String modelo = 		linha[5];		//Coluna F
+				final String preco = 		linha[6];		//Coluna G
+				final String estoque = 		linha[7];		//Coluna H
+				final String materiais = 	linha[8];		//Coluna I
+				final String medidas = 		linha[9];		//Coluna J
+				final String tamanho = 		linha[10];		//Coluna K
+				final String ean = 			linha[11];		//Coluna L
+				final String imagens = 		linha[12];		//Coluna M
+				//Tratando campos numéricos
+				final BigDecimal precoFinal = TratarString.paraBigDecimal(preco);
+				final short estoqueFinal = Short.parseShort(estoque);
+				final char tamanhoFinal = TratarString.sigla(tamanho);
+				//Criando Setor
+				final Setor setorFinal = setorService.validarByNome(setor);
+				Console.log("setorFinal: " + setorFinal.getNome() + " ID: " + setorFinal.getId()); // MODA
+				//Criando Categoria
+				final Categoria categoriaFinal = categoriaService
+						.validarByNome(setorFinal, categoria);
+				//Criando Marcas
+				final List<String> marcasArray = Arrays.asList(
+						TratarString.getDepois(marcas,":")
+						.split(",")
 				);
+				for(String mc : marcasArray) {
+					marcasFinal.add( marcaService.validarByNome(mc) );
+				}
+				//Criando Produtos
+				Produto produto = Produto.builder()
+						.categoria(categoriaFinal)
+						.nome(nome)
+						.descricao(descricao)
+						.modelo(modelo)
+						.valor(precoFinal)
+						.estoque(estoqueFinal)
+						.material(materiais)
+						.medidas(medidas)
+						.tamanho( String.valueOf(tamanhoFinal) )
+						.codigo(ean)
+						.build();
+				//Criando Imagens
+				final List<String> imagensArray = Arrays.asList(imagens.split(","));
+				for(String img : imagensArray) {
+					imagensFinais.add(ProdutoImagem.builder()
+						.imagem(img)
+						.produto(produto)
+						.build()
+					);
+				}
+				//Inserindo Atributos Pendentes (Imagens e Marca)
+				produto.addImagem(imagensFinais);
+				produto.addMarca( marcasFinal );
+				produto.setAcessos(0);
+				produto.setNota((short) 0);
+				produto.setVotos(0);
+				//Populando na lista final de Produtos
+				Console.log("Salvando produto");
+				produtos.add( ((ProdutoService) MASTER_SERVICE).salvar(produto) );
+				Console.log("Produto salvo com sucesso!");
 			}
-			//Inserindo Atributos Pendentes (Imagens e Marca)
-			produto.addImagem(imagensFinais);
-			produto.addMarca( marcaService.saveAll(marcasFinal) );
-			produto.setAcessos(0);
-			produto.setNota((short) 0);
-			produto.setVotos(0);
-			//Populando na lista final de Produtos
-			Console.log("Salvando produto");
-			produtos.add( ((ProdutoService) MASTER_SERVICE).salvar(produto) );
-			Console.log("Produto salvo com sucesso!");
+			//Fim do looping (linha)
+			//Convertendo dados
+			Console.log("Convertendo produtos para dto");
+			produtosGET.addAll( conversorDto(produtos, ProdutoAdmGET.class) );
+			//Terminando processo
+			Console.log("Retornando resposta ao cliente");
+			Console.log("</IMPORTANDO-CSV>", -1);
+			return new ResponseEntity<>(produtosGET, HttpStatus.OK);
+		} catch (IllegalArgumentException e) {
+			//TODO: tratar
+			e.printStackTrace();
+		} catch (ConfigurationException e) {
+			//TODO: tratar
+			e.printStackTrace();
+		} catch (MappingException e) {
+			//TODO: tratar
+			e.printStackTrace();
 		}
-		//Fim do looping (linha)
-		//Convertendo dados
-		Console.log("Convertendo produtos para dto");
-		produtosGET.addAll( conversorDto(produtos, ProdutoAdmGET.class) );
-		//Terminando processo
-		Console.log("Retornando resposta ao cliente");
-		Console.log("</IMPORTANDO-CSV>", -1);
-		return new ResponseEntity<>(produtosGET, HttpStatus.OK);
 	}
 
 

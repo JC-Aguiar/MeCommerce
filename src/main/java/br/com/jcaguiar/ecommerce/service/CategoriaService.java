@@ -98,6 +98,7 @@ public class CategoriaService extends MasterService<Categoria, Short> {
 					.setor(setor)
 					.nome(nomeCategoria)
 					.build();
+			JPA_REPO.saveAndFlush(categoria);
 			Console.log(String.format(
 					"Nova Categoria criada: %s [Setor %s]",
 					nomeCategoria, setor.getNome()

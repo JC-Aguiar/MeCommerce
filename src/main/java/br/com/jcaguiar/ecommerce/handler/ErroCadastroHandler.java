@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +61,12 @@ public final class ErroCadastroHandler {
 	@ExceptionHandler(ErroInesperado.class)
 	public String handler(ErroInesperado exc) {
 		return exc.getMessage();
+	}
+
+	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+	@ExceptionHandler(PersistenceException.class)
+	public String handler(PersistenceException exc) {
+		return "Erro Inesperado: " + exc.getMessage();
 	}
 
 //	@ResponseStatus(code = HttpStatus.BAD_REQUEST)

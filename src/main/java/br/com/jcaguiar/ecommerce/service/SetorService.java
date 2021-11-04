@@ -24,8 +24,9 @@ public class SetorService extends MasterService<Setor, Short> {
 			setor = Setor.builder()
 					.nome(nome)
 					.build();
+			JPA_REPO.saveAndFlush(setor);
 			Console.log(String.format(
-					"Novo Setor criado: %s", nome));
+					"Novo Setor criado: %s %d", nome, setor.getId()));
 		}
 		else {
 			setor = setores.get(0);

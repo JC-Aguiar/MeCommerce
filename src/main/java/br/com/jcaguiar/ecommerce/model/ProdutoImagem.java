@@ -27,7 +27,7 @@ final public class ProdutoImagem implements Entidade<Long> {
 	@JsonIgnore
 	private Produto produto;
 
-	@Column(nullable = false, unique = true)
+	@Column(nullable = false) //TODO: no Deploy inserir "unique = true"
 	private String imagem;
 
 }

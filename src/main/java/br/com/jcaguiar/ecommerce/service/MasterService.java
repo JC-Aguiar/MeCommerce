@@ -1,13 +1,12 @@
 package br.com.jcaguiar.ecommerce.service;
 
-import java.util.List;
-import java.util.Optional;
-
+import br.com.jcaguiar.ecommerce.projection.MasterGET;
+import br.com.jcaguiar.ecommerce.repository.MasterRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import br.com.jcaguiar.ecommerce.projection.MasterGET;
-import br.com.jcaguiar.ecommerce.repository.MasterRepository;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public abstract class MasterService<OBJ, ID> {
