@@ -1,19 +1,18 @@
 package br.com.jcaguiar.ecommerce.service;
 
-import java.util.Arrays;
-import java.util.List;
-
+import br.com.jcaguiar.ecommerce.Console;
+import br.com.jcaguiar.ecommerce.dto.ProdutoPOST;
+import br.com.jcaguiar.ecommerce.model.Produto;
+import br.com.jcaguiar.ecommerce.projection.MasterGET;
+import br.com.jcaguiar.ecommerce.repository.ProdutoRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import br.com.jcaguiar.ecommerce.Console;
-import br.com.jcaguiar.ecommerce.dto.ProdutoPOST;
-import br.com.jcaguiar.ecommerce.model.Produto;
-import br.com.jcaguiar.ecommerce.projection.MasterGET;
-import br.com.jcaguiar.ecommerce.repository.ProdutoRepository;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class ProdutoService extends MasterService<Produto, Integer> {
@@ -25,6 +24,7 @@ public class ProdutoService extends MasterService<Produto, Integer> {
 	}
 	
 	public List<Produto> findAll(Example<Produto> produtoExemplo) {
+		//Realizando consulta
 		List<Produto> produtos = ((ProdutoRepository) JPA_REPO).findAll(produtoExemplo);
 		Console.log("[PRODUTO-SERVICE] Total: " + produtos.size());
 		return produtos;
@@ -43,7 +43,7 @@ public class ProdutoService extends MasterService<Produto, Integer> {
 		String nome = produtoPost.getNome();
 		String descricao = produtoPost.getDescricao();
 		List<String> materiais;
-		List<String> marcas = produtoPost.getMarca();
+		List<String> marcas = produtoPost.getMarcaNome();
 		try {
 			materiais = Arrays.asList( produtoPost.getMaterial().split(",") );
 		}
@@ -52,7 +52,7 @@ public class ProdutoService extends MasterService<Produto, Integer> {
 		produtoPost.setNome(null);
 		produtoPost.setDescricao(null);
 		produtoPost.setMaterial(null);
-		produtoPost.setMarca(null);
+		produtoPost.setMarcaNome(null);
 		//Convertendo DTO para Entidade
 		Produto produtoExemplo = modelMapper.map(produtoPost, Produto.class);
 		produtoExemplo.resetDatas();

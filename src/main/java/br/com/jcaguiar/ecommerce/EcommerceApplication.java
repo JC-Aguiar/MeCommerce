@@ -89,6 +89,49 @@ public class EcommerceApplication {
 	 * 		Dar nota para Produtos
 	 */
 
+	/*
+	TODO: ESTRUTURA DE REPOSTA JSON PARA AS REQUISIÇÕES
+		{
+			pagina: {
+				logo: {
+					url: String
+				},
+				menu: {
+					carrinho: [
+						carrinhoItem: {
+							nome: String,
+							valor: BigDecimal,
+							marcas: String,
+							quantidade: Short,
+							imagem: String
+						},
+						totalItens: Integer
+					],
+					usuario: {
+						sigla: String,
+						email: String,
+						avisos: [
+							mensagem: String
+						],
+						perfil: String,
+						logout: String
+					},
+					acesso: {
+						login: String,
+						novoCadastro: String,
+						novaSenha: String
+					}
+				},
+				links: [
+					nome: String,
+					url: String
+				],
+				conteudo: {
+				}
+			}
+		}
+	}*/
+
 	@RequestMapping("/")
 	@ResponseBody
 	String home() {

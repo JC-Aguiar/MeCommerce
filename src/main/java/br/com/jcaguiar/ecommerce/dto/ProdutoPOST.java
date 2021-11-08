@@ -1,23 +1,18 @@
 package br.com.jcaguiar.ecommerce.dto;
 
-import java.math.BigDecimal;
-import java.util.List;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.FieldDefaults;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @FieldDefaults(level = AccessLevel.PRIVATE)
 final public class ProdutoPOST extends MasterPOST {
 	
-	String categoria;
-	List<String> marca;
+	String categoriaNome;
+	List<String> marcaNome;
 	@Size(min = 3) String nome;
 	@Size(min = 3) String descricao;
 	@Min(value = 1) BigDecimal valor;
@@ -27,7 +22,7 @@ final public class ProdutoPOST extends MasterPOST {
 	
 	@Override 
 	public String toString() {
-		String stringMarcas = (marca == null) ? null : marca.toArray().toString();
+		String stringMarcas = (marcaNome == null) ? null : marcaNome.toArray().toString();
 		String stringImagens = (imagem == null) ? null : imagem.toArray().toString();
 		
 		return String.format(
@@ -42,7 +37,7 @@ final public class ProdutoPOST extends MasterPOST {
 			nome, 
 			descricao,
 			stringMarcas,
-			categoria,
+			categoriaNome,
 			valor,
 			tamanho,
 			material,

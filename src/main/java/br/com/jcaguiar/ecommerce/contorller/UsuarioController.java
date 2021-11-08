@@ -2,7 +2,7 @@ package br.com.jcaguiar.ecommerce.contorller;
 
 import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.dto.UsuarioPOST;
-import br.com.jcaguiar.ecommerce.exception.EmailDuplicadoException;
+import br.com.jcaguiar.ecommerce.exception.CadastroDuplicadoException;
 import br.com.jcaguiar.ecommerce.exception.ErroInesperado;
 import br.com.jcaguiar.ecommerce.model.Perfil;
 import br.com.jcaguiar.ecommerce.model.PerfilTipo;
@@ -65,7 +65,7 @@ public class UsuarioController extends MasterController<Usuario, Integer, Usuari
 
 	@PostMapping("/add")
 	@Transactional
-	public ResponseEntity<?> add(@Valid @RequestBody UsuarioPOST userPost) throws EmailDuplicadoException, Exception {
+	public ResponseEntity<?> add(@Valid @RequestBody UsuarioPOST userPost) throws CadastroDuplicadoException, Exception {
 		try {
 			Console.log("Nova solicitação para cadastro de usuário.");
 			//Convertendo DTO para Entidade
@@ -86,10 +86,12 @@ public class UsuarioController extends MasterController<Usuario, Integer, Usuari
 			UsuarioGET userGet = (UsuarioGET) conversorDto(user, UsuarioGET.class);
 			//Retornando ao front-end
 			return new ResponseEntity<>(userGet, HttpStatus.CREATED);
-		} catch (IllegalArgumentException e) {
-			throw new ErroInesperado("Erro inesperado. Algum dos dados enviados constam inválidos");
 		} catch (PersistenceException | DataIntegrityViolationException e) {
-			throw new EmailDuplicadoException("E-mail já consta em uso. Favor tentar novamente com outro.");
+			e.printStackTrace();
+			throw new CadastroDuplicadoException("E-mail já consta em uso. Favor tentar novamente com outro.");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ErroInesperado(e);
 		}
 	}
 

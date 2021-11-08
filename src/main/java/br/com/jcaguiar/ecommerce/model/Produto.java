@@ -78,7 +78,11 @@ public class Produto extends EntidadeData<Integer> {
 
 	private Short nota;
 
-	// MÉTODOS
+	/**<h1>MÉTODOS</h1>
+	 *
+	 *
+	 * @param img
+	 */
 	public void addImagem(ProdutoImagem img) {
 		this.imagem.add(img);
 	}

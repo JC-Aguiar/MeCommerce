@@ -34,9 +34,25 @@ public abstract class EntidadeData<ID> implements Entidade<ID> {
 
 	protected LocalDateTime data_cadastro = DataFormato.now();
 
-	protected LocalDateTime data_ativo = DataFormato.now();
+	protected LocalDateTime data_ativo;
 
 	protected LocalDateTime data_desativo;
+
+	/**<hr><h2>ATIVAR CADASTRO</h2>
+	 * Ativa o cadastro para consultas e registra a data dessa operação
+	 */
+	public void ativar() {
+		this.ativo = true;
+		data_ativo = DataFormato.now();
+	}
+
+	/**<hr><h2>DESATIVAR CADASTRO</h2>
+	 * Desativa o cadastro para consultas e registra a data dessa operação
+	 */
+	public void desativar() {
+		this.ativo = false;
+		data_desativo = DataFormato.now();
+	}
 
 	/**
 	 * <hr><h2>RESETAR DATA CADASTRO</h2>

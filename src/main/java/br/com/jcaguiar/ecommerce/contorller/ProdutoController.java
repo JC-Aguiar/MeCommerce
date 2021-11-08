@@ -2,6 +2,8 @@ package br.com.jcaguiar.ecommerce.contorller;
 
 import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.dto.ProdutoPOST;
+import br.com.jcaguiar.ecommerce.exception.CadastroDuplicadoException;
+import br.com.jcaguiar.ecommerce.exception.ErroInesperado;
 import br.com.jcaguiar.ecommerce.model.*;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
 import br.com.jcaguiar.ecommerce.projection.ProdutoAdmGET;
@@ -9,16 +11,15 @@ import br.com.jcaguiar.ecommerce.projection.ProdutoUserGET;
 import br.com.jcaguiar.ecommerce.service.*;
 import br.com.jcaguiar.ecommerce.util.LeitorCsv;
 import br.com.jcaguiar.ecommerce.util.TratarString;
-import org.modelmapper.ConfigurationException;
-import org.modelmapper.MappingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.math.BigDecimal;
@@ -46,50 +47,59 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 	}
 	
 
-	/**BUSCA FILTRADA 
-	 * Busca por um produto com as especificações informadas.
-	 * @apiNote Para os atributos tipo Srting, é necessário coletá-los e 
-	 * 
-	 * @param HttpServletRequest para validar se usuário é ADM ou não
-	 * @return ResponseEntity List<ProdutoAdmGET> ou List<ProdutoUserGET>
+	/**<hr><h2>BUSCA FILTRADA</h2>
+	 * Filtra e busca por produtos contendo todas as especificações informadas.
+	 * @param produtoPost {@link ProdutoPOST} é um objeto DTO com atributos básicos da entidade {@link Produto}.
+	 *                                        Esse DTO será usado como base da consulta, através da interface
+	 *                                        {@link Example}.
+	 * @return {@link ResponseEntity} contendo a List<{@link ProdutoUserGET}> dos objetos encontrados.
 	 */
 	@PostMapping("/filtrar")
 	@Transactional
-	public ResponseEntity<List<?>> buscarTodos(@RequestBody ProdutoPOST produtoPost, HttpServletRequest request) {
-		//Iniciando variáveis
-		List<Produto> produtos;
-		List<? extends MasterGET> produtosGET;
-		Class<? extends MasterGET> classeAlvo; 
-		Produto produto;
-		//Exibindo DTO
-		Console.log("ProdutoDTO: ");
-		Console.log( produtoPost.toString() );
-		//Preparando ordenação
-		//final Sort ORDENE = Sort.by("id").ascending();
-		//Complexidade do resultado com base no perfil do usuário
-		if( request.isUserInRole(ADM) || admSql ) {
-			log(0); //Consulta ADMIN
-			classeAlvo = ProdutoAdmGET.class;
+	public ResponseEntity<?> buscarTodos(@RequestBody ProdutoPOST produtoPost) {
+		try {
+			//Iniciando variáveis
+			List<Produto> produtos;
+			List<ProdutoUserGET> produtosGET;
+			Produto produto;
+			//Exibindo DTO
+			Console.log("ProdutoDTO: ");
+			Console.log( produtoPost.toString() );
+			//Convertendo DTO para Entidade e anulando atributos inconvenientes para a consulta
+			produto = conversorEntidade(produtoPost);
+			produto.resetDatas();
+			//Criando e configurando exemplo de produto para a consulta
+			//TODO: criar uma classe ExampleMatcher estático para evitar criação de novas instâncias
+			ExampleMatcher matcher = ExampleMatcher.matchingAll()
+					.withIgnorePaths("id")
+					.withIgnorePaths("ativo")
+					.withIgnorePaths("categoria_data_cadastro")
+					.withIgnoreCase()
+					.withIgnoreNullValues()
+					.withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+			Example<Produto> produtoExemplo = Example.of(produto, matcher);
+			//Consultando produtos com base no exemplo
+			produtos = ((ProdutoService) MASTER_SERVICE).findAll(produtoExemplo);
+			//Convertendo Entidade em DTO
+			Console.log("Convertendo dados");
+			produtosGET = (List<ProdutoUserGET>) conversorDto(produtos, ProdutoUserGET.class);
+			final short totalItens = (short) produtosGET.size();
+			final short quantidade = (short) (totalItens/10);
+			//Criando paginação com ordenação
+			Sort ordenacao = Sort.by("nome").ascending();
+			Page<ProdutoUserGET> paginaFinal = new PageImpl<>(
+					produtosGET,
+					PageRequest.of(quantidade, 10, ordenacao).first(),
+					totalItens
+			);
+			//Retornando resposta
+			Console.log("Reportando resposta");
+			return new ResponseEntity<>(paginaFinal, HttpStatus.OK);
+		//EM CASO DE ERRO
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ErroInesperado(e);
 		}
-		else {
-			log(1); //Consulta USER
-			classeAlvo = ProdutoUserGET.class;
-		}
-		produto = conversorEntidade(produtoPost);
-		produto.resetDatas();
-		produto.setAtivo(false);
-		ExampleMatcher matcher = ExampleMatcher.matching()
-	        .withIgnoreCase()
-	        .withIgnoreNullValues()
-	        .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-		Example<Produto> produtoExemplo = Example.of(produto, matcher);
-		Console.log("ProdutoExemplo Nome: " + produtoExemplo.getProbe().getNome());
-		Console.log("ProdutoExemplo Tamanho: " + produtoExemplo.getProbe().getTamanho());
-		produtos = ((ProdutoService) MASTER_SERVICE).findAll(produtoExemplo);
-		Console.log("Convertendo dados");
-		produtosGET = conversorDto(produtos, classeAlvo);
-		Console.log("Reportando resposta");
-		return new ResponseEntity<>(produtosGET, HttpStatus.OK);
 	}
 	
 	
@@ -215,9 +225,9 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 				}
 				//Inserindo Atributos Pendentes (Imagens e Marca)
 				produto.addImagem(imagensFinais);
-				produto.addMarca( marcasFinal );
+				produto.addMarca(marcasFinal);
 				produto.setAcessos(0);
-				produto.setNota((short) 0);
+				produto.setNota( (short) 0 );
 				produto.setVotos(0);
 				//Populando na lista final de Produtos
 				Console.log("Salvando produto");
@@ -232,15 +242,13 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 			Console.log("Retornando resposta ao cliente");
 			Console.log("</IMPORTANDO-CSV>", -1);
 			return new ResponseEntity<>(produtosGET, HttpStatus.OK);
-		} catch (IllegalArgumentException e) {
-			//TODO: tratar
+		}  catch (PersistenceException | DataIntegrityViolationException e) {
+			//TODO: um único erro/exceção não deveria bloquear toda a importação. Tratar!
 			e.printStackTrace();
-		} catch (ConfigurationException e) {
-			//TODO: tratar
+			throw new CadastroDuplicadoException("SKU já consta em uso. Favor tentar novamente com outro.");
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (MappingException e) {
-			//TODO: tratar
-			e.printStackTrace();
+			throw new ErroInesperado(e);
 		}
 	}
 
