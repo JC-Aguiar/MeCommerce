@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 @RestControllerAdvice
-public final class ErroCadastroHandler {
+public final class ControllerHandler {
 	
 	@Autowired
 	private MessageSource messageSource;

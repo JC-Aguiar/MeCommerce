@@ -20,11 +20,26 @@ public final class TratarString {
 	}
 	
 	public static String getDepois(List<String> text, String targetCharSequence) {
-		String textoFInal = "";
+		String textoFinal = "";
 		for(String txt : text) {
-			textoFInal += getDepois(txt, targetCharSequence) + " ";
+			textoFinal += getDepois(txt, targetCharSequence) + " ";
 		}
-		return textoFInal;
+		return textoFinal;
+	}
+
+	public static String stackTraceToString(StackTraceElement[] stack) {
+		String text = "";
+		for(StackTraceElement element : stack) {
+			final String elementText = element.toString();
+			String[] elementArray = elementText.split(".");
+			final int elementSize = elementArray.length;
+			text += Arrays.stream(elementArray)
+					.skip(elementSize - 3)
+					.toString()
+					+ "\n";
+		}
+		return text;
+
 	}
 	
 	public static int paraInteiro(String text) throws NumberFormatException {

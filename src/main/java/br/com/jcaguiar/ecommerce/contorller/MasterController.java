@@ -1,30 +1,5 @@
 package br.com.jcaguiar.ecommerce.contorller;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
-import org.modelmapper.ConfigurationException;
-import org.modelmapper.MappingException;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.model.Entidade;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
@@ -32,33 +7,32 @@ import br.com.jcaguiar.ecommerce.projection.ProdutoAdmGET;
 import br.com.jcaguiar.ecommerce.projection.ProdutoUserGET;
 import br.com.jcaguiar.ecommerce.service.MasterService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ConfigurationException;
+import org.modelmapper.MappingException;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
-/**CONTROLADOR MODELO PADRÃO
- * Classe mãe que define o básico de todos os demais crontrollers
- * No construtor das classes herdeiras é necessário preencher
- * as seguintes variáveis (respectivamente):
- * 		<classeModelo> = Classe da Entidade que o controller gerencia 
- * 		
- * 		<classeDto> = Classe DTO da Entidade, usado para envio de requisições
- * 		
- * 		<URL> = Url (caminho relativo) em que este controller atua
- * 		
- * 		<MasterService> = Classe Service da Entidade, no qual o controller irá
- * 		solicitar para obter dados do Banco de Dados
- * 
- * Métodos:
- * 		>Retornar todos os cadastros
- * 		>Retornar cadastro por id
- * 		>Retornar cadastro(s) por nome
- * 		>Retornar cadastro(s) com nome
- * 		>Salvar um ou mais cadastros
- *  	>Atualizar um ou mais cadastros
- *   	>Deletar um ou mais cadasrtros
- *    	>Converter uma ou mais Entidades para DTO
- *     	>Converter um ou mais DTOs para Entidade
- * 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+/**<h1>CONCEITO</h1>
+ * Classe mãe que define o básico de todos os demais crontrollers. <br>
+ * No construtor das classes herdeiras é necessário preencher as seguintes variáveis (respectivamente): <br>
+ * <h1>ATRIBUTOS</h1>
  * @author JM Costal Aguiar
- *
  * @param <OBJ> Genérico que representa a Entidade
  * @param <ID> Genérico que representa a Entidade
  * @param <DTO> Genérico que representa a Entidade
@@ -68,6 +42,7 @@ import lombok.RequiredArgsConstructor;
 public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 
 	protected boolean admSql = false;
+	protected short itensPorPagina = 12;
 	@Autowired protected ModelMapper modelMapper;
 	protected final Class<OBJ> classeModelo;
 	protected final Class<DTO> classeDto;
@@ -75,16 +50,16 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	protected final MasterService<OBJ, ID> MASTER_SERVICE;
 	protected static final String ADM = "ROLE_ADM";
 	private static final String[] LOG = {
-										"Consulta Completa",		//0
-										"Consulta Restrita",		//1
-										"Cadastro Criado",			//2
-										"Cadastro Atualizado",		//3
-										"Cadastro Excluído",		//4
-										"Erro na Operação"			//5+
-										};
+			"Consulta Completa",		//0
+			"Consulta Restrita",		//1
+			"Cadastro Criado",			//2
+			"Cadastro Atualizado",		//3
+			"Cadastro Excluído",		//4
+			"Erro na Operação"			//5+
+	};
 	
 	
-	/**CADASTRAR UM 
+	/**<hr><h2>CADASTRAR UM</h2>
 	 * 
 	 * @param dto
 	 * @param request
@@ -113,7 +88,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	}
 
 	
-	/**BUSCA TODOS 
+	/**<hr><h2>CADASTRAR TODOS</h2>
 	 * 
 	 * @param request
 	 * @return
@@ -147,7 +122,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	}
 	
 	
-	/**BUSCA POR ID - EXATA 
+	/**<hr><h2>BUSCA POR ID - EXATA</h2>
 	 * 
 	 * @param id
 	 * @param request
@@ -171,7 +146,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	}
 	
 	
-	/**BUSCA POR NOME - POSSUI
+	/**<hr><h2>BUSCA POR NOME - CONTÊM</h2>
 	 * Dependendo do login/perfil de quem fez a solicitação serão retornados diferentes campos da Entidade.
 	 * @param nome
 	 * @param request
@@ -194,7 +169,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	}
 	
 	
-	/**BUSCA POR NOME - EXATA 
+	/**<hr><h2>BUSCA POR NOME - EXATA</h2>
 	 * 
 	 * @param nome
 	 * @param request
@@ -216,9 +191,28 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 		
 		return new ResponseEntity<>(objetosReport, HttpStatus.OK);
 	}
+
+	/**<hr><h2>CARREGAR PÁGINA</h2>
+	 *
+	 * @param nome
+	 * @param request
+	 * @return
+	 * @throws NumberFormatException
+	 */
+	public ResponseEntity<?> paginanar(List<?> objetos, Sort ordenacao, int pageIndex) {
+		pageIndex = pageIndex < 0 ? 0 : pageIndex;
+		Page<?> paginaFinal = new PageImpl<>(
+				objetos,
+				PageRequest.of(pageIndex, this.itensPorPagina, ordenacao),
+				objetos.size()
+		);
+		return new ResponseEntity<>(paginaFinal, HttpStatus.OK);
+	}
+
+
 	
 	
-	/**ATUALIZA UM CADASTRO 
+	/**<hr><h2>ATUALIZA UM CADASTRO</h2>
 	 * 
 	 * @param objeto
 	 * @param request
@@ -228,7 +222,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	public abstract ResponseEntity<?> atualizar(@RequestBody @Valid OBJ objeto, HttpServletRequest request);
 	
 	
-	/**ATUALIZA MUITOS CADASTROS 
+	/**<hr><h2>ATUALIZA MUITOS CADASTROS</h2>
 	 * 
 	 * @param objeto
 	 * @param request
@@ -238,7 +232,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	public abstract ResponseEntity<?> atualizarTodos(@RequestBody @Valid List<OBJ> objeto, HttpServletRequest request);
 	
 	
-	/**DELETA UM CADASTRO 
+	/**<hr><h2>DELETA UM CADASTRO</h2>
 	 * 
 	 * @param objeto
 	 * @param request
@@ -248,7 +242,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	public abstract ResponseEntity<?> deletar(@RequestBody @Valid OBJ objeto, HttpServletRequest request);
 	
 	
-	/**DELETA MUITOS CADASTROS 
+	/**<hr><h2>DELETA MUITOS CADASTROS</h2>
 	 * 
 	 * @param objeto
 	 * @param request
@@ -258,7 +252,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	public abstract ResponseEntity<?> deletarTodos(@RequestBody @Valid List<OBJ> objeto, HttpServletRequest request);	
 	
 	
-	/**CONVERSOR: ENTIDADE >>> DTO
+	/**<hr><h2>CONVERSOR: ENTIDADE ~ DTO</h2>
 	 * 
 	 * @param object
 	 * @param classGET
@@ -273,7 +267,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	}
 	
 	
-	/**CONVERSOR (LISTA): ENTIDADE >>> DTO 
+	/**<hr><h2>CONVERSOR (LISTA): ENTIDADE ~ DTO</h2>
 	 * 
 	 * @param object
 	 * @param classGET
@@ -292,7 +286,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	}
 	
 	
-	/**CONVERSOR: DTO >>> ENTIDADE
+	/**<hr><h2>CONVERSOR: DTO ~ ENTIDADE</h2>
 	 * 
 	 * @param dto
 	 * @return
@@ -306,7 +300,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	}
 	
 	
-	/**CONVERSOR (LISTA): DTO >>> ENTIDADE
+	/**<hr><h2>CONVERSOR (LISTA): DTO ~ ENTIDADE</h2>
 	 * 
 	 * @param listaDto
 	 * @return
@@ -324,7 +318,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	}
 	
 	
-	/*MENSAGENS DAS OPERAÇÕES 
+	/** <hr><h2>MENSAGENS DAS OPERAÇÕES</h2>
 	 * Mensagens LOG:
 	 * 0  "Consulta Completa"
 	 * 1  "Consulta Restrita"

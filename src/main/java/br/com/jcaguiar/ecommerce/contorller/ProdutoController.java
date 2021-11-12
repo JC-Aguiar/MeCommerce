@@ -83,18 +83,18 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 			//Convertendo Entidade em DTO
 			Console.log("Convertendo dados");
 			produtosGET = (List<ProdutoUserGET>) conversorDto(produtos, ProdutoUserGET.class);
-			final short totalItens = (short) produtosGET.size();
-			final short quantidade = (short) (totalItens/10);
-			//Criando paginação com ordenação
-			Sort ordenacao = Sort.by("nome").ascending();
-			Page<ProdutoUserGET> paginaFinal = new PageImpl<>(
-					produtosGET,
-					PageRequest.of(quantidade, 10, ordenacao).first(),
-					totalItens
-			);
+//			final short totalItens = (short) produtosGET.size();
+//			final short quantidade = (short) (totalItens/10);
+//			//Criando paginação com ordenação
+//			Sort ordenacao = Sort.by("nome").ascending();
+//			Page<ProdutoUserGET> paginaFinal = new PageImpl<>(
+//					produtosGET,
+//					PageRequest.of(quantidade, 10, ordenacao).first(),
+//					totalItens
+//			);
 			//Retornando resposta
 			Console.log("Reportando resposta");
-			return new ResponseEntity<>(paginaFinal, HttpStatus.OK);
+			return paginanar(produtosGET, Sort.by("id").ascending(), 0);
 		//EM CASO DE ERRO
 		} catch (Exception e) {
 			e.printStackTrace();
