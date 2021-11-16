@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Getter
-public final class LoginPOST extends MasterPOST {
+public final class LoginPOST implements MasterPOST {
 	/**CONCEITO
 	 * 
 	 */

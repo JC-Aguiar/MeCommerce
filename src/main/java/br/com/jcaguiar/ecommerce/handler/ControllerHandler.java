@@ -1,13 +1,15 @@
 package br.com.jcaguiar.ecommerce.handler;
 
-import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.dto.ErroCadastroPOST;
 import br.com.jcaguiar.ecommerce.exception.CadastroDuplicadoException;
-import br.com.jcaguiar.ecommerce.exception.ErroInesperado;
+import br.com.jcaguiar.ecommerce.exception.ErroInesperadoException;
+import br.com.jcaguiar.ecommerce.model.Problema;
+import br.com.jcaguiar.ecommerce.service.ProblemaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,7 +18,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 @RestControllerAdvice
 public final class ControllerHandler {
@@ -24,13 +25,16 @@ public final class ControllerHandler {
 	@Autowired
 	private MessageSource messageSource;
 
-	private final String alerta = "ERRO INESPERADO.\n";
+	@Autowired
+	private ProblemaService problemaService;
 
-	private final String complemento =
+	private final static String ALERTA = "ERRO INESPERADO.\n";
+
+	private final static String COMPLEMENTO =
 			"Entre em contato com a equipe técnica ou responsável.\n" +
 			"Recomendamos anotar o horário e a tela ou ação que estava tentando realizar.\n";
 
-	//TODO: como criar novos Hendlers
+	//TODO: como criar novos Handlers
 	//TODO: na classe de tratamento geral realizar persistência dos erros/exceções no banco
 
 	/**ERRO NO CADASTRO
@@ -44,7 +48,7 @@ public final class ControllerHandler {
 		//Coletando atributos inválidos
 		List<FieldError> listaErro = exc.getBindingResult().getFieldErrors();
 		//Preparando lista DTO
-		List<ErroCadastroPOST> listaErroDto = new ArrayList<ErroCadastroPOST>();
+		List<ErroCadastroPOST> listaErroDto = new ArrayList<>();
 		//Iterando listas
 		for(FieldError erro : listaErro) {
 			final String CAMPO =  erro.getField();
@@ -64,35 +68,50 @@ public final class ControllerHandler {
 		);
 	}
 
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(ErroInesperado.class)
-	public String handler(ErroInesperado exc) {
+	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+	@ExceptionHandler(StringIndexOutOfBoundsException.class)
+	public ErroInesperadoException handler(StringIndexOutOfBoundsException exc) {
+		return new ErroInesperadoException(500, exc.getMessage());
+	}
+
+	//@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErroInesperadoException> handler(Exception exc) {
 		//Iniciando variáveis
-		String mensagem = "";
+		String mensagem;
 		String tipoExc = exc.getClass().toString();
-		Console.log( tipoExc.toUpperCase(Locale.ROOT) );
+		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 		//Tratando mensagem dependendo do erro
 		switch (tipoExc) {
 			case "ConfigurationException":
-				mensagem = "A configuração entre cliente e servidor não está correta.";
+				mensagem = "A configuração entre cliente e servidor não está correta.\n";
 				break;
 			case "IllegalArgumentException":
-				mensagem = "Alguns dos dados enviados estão em desacordo com os requisitos internos.";
+				mensagem = "Alguns dos dados enviados estão em desacordo com os requisitos internos.\n";
+				status = HttpStatus.BAD_REQUEST;
 				break;
 			case "MappingException":
-				mensagem = "O servidor não conseguiu relacionar os dados entre si.";
+				mensagem = "O servidor não conseguiu relacionar os dados entre si.\n";
 				break;
 			case "PersistenceException":
-				mensagem = "Ocorreu um erro interno ao tentar salvar os dados no banco de dados.";
+				mensagem = "Ocorreu um erro interno ao tentar salvar os dados no banco de dados.\n";
 				break;
 			case "NullPointerException":
-				mensagem = "O servidor não conseguiu processar os dados enviados.";
+				mensagem = "O servidor não conseguiu processar os dados enviados.\n";
 				break;
 			default:
 				mensagem = exc.getMessage() + "\n";
+				mensagem = mensagem.length() < 2 ? "Inconformidade em manutenção (#EXCEP-11).\n" : mensagem;
 		}
+		//Formando mensagem completa
+		mensagem = ALERTA + mensagem + COMPLEMENTO;
+		//Persistindo stackTrace do erro no banco
+		problemaService.salvar( new Problema(exc) );
 		//Retornando mensagem de erro
-		return this.alerta + mensagem + this.complemento;
+		return new ResponseEntity<>(
+				new ErroInesperadoException(status.value(), mensagem),
+				status
+		);
 	}
 
 //	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)

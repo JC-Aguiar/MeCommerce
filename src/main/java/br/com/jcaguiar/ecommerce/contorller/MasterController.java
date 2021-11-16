@@ -1,10 +1,9 @@
 package br.com.jcaguiar.ecommerce.contorller;
 
 import br.com.jcaguiar.ecommerce.Console;
+import br.com.jcaguiar.ecommerce.dto.MasterPOST;
 import br.com.jcaguiar.ecommerce.model.Entidade;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
-import br.com.jcaguiar.ecommerce.projection.ProdutoAdmGET;
-import br.com.jcaguiar.ecommerce.projection.ProdutoUserGET;
 import br.com.jcaguiar.ecommerce.service.MasterService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ConfigurationException;
@@ -23,7 +22,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,15 +37,19 @@ import java.util.Optional;
  */
 @RestController
 @RequiredArgsConstructor 
-public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
+public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO extends MasterPOST, REPORT extends MasterGET> {
 
+	//TODO: revisar se devo manter atributos "protected"
+
+	@Autowired protected ModelMapper modelMapper;
+	@Autowired protected Class<OBJ> classeModelo;
+	@Autowired protected Class<DTO> classeDtoPost;
+	@Autowired protected Class<REPORT> classeDtoGet;
+	//@Autowired protected URL endPoint;
+
+	protected final MasterService<OBJ, ID> masterService;
 	protected boolean admSql = false;
 	protected short itensPorPagina = 12;
-	@Autowired protected ModelMapper modelMapper;
-	protected final Class<OBJ> classeModelo;
-	protected final Class<DTO> classeDto;
-	private final String URL;
-	protected final MasterService<OBJ, ID> MASTER_SERVICE;
 	protected static final String ADM = "ROLE_ADM";
 	private static final String[] LOG = {
 			"Consulta Completa",		//0
@@ -72,19 +74,11 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	public ResponseEntity<?> salvar(@RequestBody @Valid DTO dto, HttpServletRequest request, UriComponentsBuilder uriBuilder)
 	throws Exception {		
 		//Convertendo DTO e Salvando
-		final OBJ OBJ_MODEL = conversorEntidade(dto);
-		final ID OBJ_MODEL_ID = (ID) OBJ_MODEL.getId();
-		MASTER_SERVICE.salvar(OBJ_MODEL);		
+		final OBJ objModel = conversorEntidade(dto);
+		final ID objModelId = (ID) objModel.getId();
+		masterService.salvar(objModel);
 		//Montando URI de retorno
-		final String PATH = String.format("/%s/{id}", URL);
-		URI uri = uriBuilder
-				.path(PATH)
-				.buildAndExpand(OBJ_MODEL_ID)
-				.toUri();		
-		//Retornando HttpStatus, URL e DTO 
-		return ResponseEntity
-				.created(uri)
-				.body(dto);
+		return buscarId(objModelId, request);
 	}
 
 	
@@ -95,33 +89,37 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	 */
 	@GetMapping
 	@Transactional
-	public ResponseEntity<List<?>> buscarTodos(HttpServletRequest request) {
+	public ResponseEntity<?> buscarTodos(HttpServletRequest request) {
+
+		/*
+		TODO: métodos de implementar opção de retorno DTO de acordo com o perfil do usuário: <br>
+		  		1. MasterController possui um outro atributo para informar DTO adm.  <br>
+			  	2. As classes filho podem acionar um método do MasterController, informando os tipos
+			  	   de DTO via parâmetro
+		 */
+
 		//Preparando ordenação
-		final Sort ORDENE = Sort.by("id").ascending();
-		List<OBJ> entity;
-		List<? extends MasterGET> dto;
+		final Sort ordene = Sort.by("id").ascending();
 		//Validando perfil do usuário
 		if( request.isUserInRole(ADM) || admSql ) {
 			//Consulta ADMIN
 			log(0);
 			Console.log("Coletando dados");
-			entity = MASTER_SERVICE.findAll();
-			Console.log("Convertendo dados");
-			dto = conversorDto(entity, ProdutoAdmGET.class);
+			return paginanar(masterService.findAll(), ordene, 0);
+//			Console.log("Convertendo dados");
+//			dto = conversorDto(entity, classeModelo);
 		}
 		else {
 			//Consulta USER
 			log(1);
 			Console.log("Coletando dados");
-			entity = MASTER_SERVICE.findAll();
+			List<OBJ> entity = masterService.findAll();
 			Console.log("Convertendo dados");
-			dto = conversorDto(entity, ProdutoUserGET.class);
+			List<? extends MasterGET> dto = conversorDto(entity, classeDtoGet);
+			return paginanar(dto, ordene, 0);
 		}
-		Console.log("Reportando resposta");
-		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
-	
-	
+
 	/**<hr><h2>BUSCA POR ID - EXATA</h2>
 	 * 
 	 * @param id
@@ -129,23 +127,26 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	 * @return
 	 */
 	@GetMapping("/id/{id}")
-	public ResponseEntity<?> buscarId(@PathVariable(name = "id")ID id, HttpServletRequest request) {
+	public ResponseEntity<?> buscarId(@PathVariable(name = "id") ID id, HttpServletRequest request) {
 		//Preparando ordenação
 		final Sort ORDENE = Sort.by("id").ascending();
+
+		if(id == null){
+			throw new NullPointerException();
+		}
 		
 		//Usuário da consulta ADMIN?
 		if( request.isUserInRole(ADM) || admSql) {
 			log(0);//Consulta ADMIN
-			final Optional<?> OBJ_VO = MASTER_SERVICE.findById(id);
+			final Optional<?> OBJ_VO = masterService.findById(id);
 			return new ResponseEntity<>(OBJ_VO, HttpStatus.OK);
 		}
 		log(1);//Consulta USER
-		final MasterGET OBJ_VO = MASTER_SERVICE.findId(id);
+		final MasterGET OBJ_VO = masterService.findId(id);
 		
 		return new ResponseEntity<>(OBJ_VO, HttpStatus.OK);
 	}
-	
-	
+
 	/**<hr><h2>BUSCA POR NOME - CONTÊM</h2>
 	 * Dependendo do login/perfil de quem fez a solicitação serão retornados diferentes campos da Entidade.
 	 * @param nome
@@ -159,16 +160,15 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 		
 		if( request.isUserInRole(ADM) || admSql) {
 			log(0);
-			final List<?> objetos = MASTER_SERVICE.findByNomeContainingAdm(nome);
+			final List<?> objetos = masterService.findByNomeContainingAdm(nome);
 			return new ResponseEntity<>(objetos, HttpStatus.OK);
 		}
 		log(1);
-		final List<?> objetosReport = MASTER_SERVICE.findByNomeContaining(nome);
+		final List<?> objetosReport = masterService.findByNomeContaining(nome);
 		
 		return new ResponseEntity<>(objetosReport, HttpStatus.OK);
 	}
-	
-	
+
 	/**<hr><h2>BUSCA POR NOME - EXATA</h2>
 	 * 
 	 * @param nome
@@ -176,18 +176,18 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	 * @return
 	 * @throws NumberFormatException
 	 */
-	@GetMapping("/nome_exato/{nome}")
+	@GetMapping("/nome exato/{nome}")
 	public ResponseEntity<?> buscarNome(@PathVariable(name = "nome")String nome, HttpServletRequest request)
 	throws NumberFormatException {
 		final Sort ORDENE = Sort.by("id").ascending();
 		
 		if( request.isUserInRole(ADM) || admSql) {
 			log(0);
-			final List<?> objetos = MASTER_SERVICE.findByNomeAdm(nome);
+			final List<?> objetos = masterService.findByNomeAdm(nome);
 			return new ResponseEntity<>(objetos, HttpStatus.OK);
 		}
 		log(1);
-		final List<?> objetosReport = MASTER_SERVICE.findByNomeContainingAdm(nome);
+		final List<?> objetosReport = masterService.findByNomeContainingAdm(nome);
 		
 		return new ResponseEntity<>(objetosReport, HttpStatus.OK);
 	}
@@ -200,6 +200,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	 * @throws NumberFormatException
 	 */
 	public ResponseEntity<?> paginanar(List<?> objetos, Sort ordenacao, int pageIndex) {
+		Console.log("Paginando resposta");
 		pageIndex = pageIndex < 0 ? 0 : pageIndex;
 		Page<?> paginaFinal = new PageImpl<>(
 				objetos,
@@ -209,9 +210,6 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 		return new ResponseEntity<>(paginaFinal, HttpStatus.OK);
 	}
 
-
-	
-	
 	/**<hr><h2>ATUALIZA UM CADASTRO</h2>
 	 * 
 	 * @param objeto
@@ -328,12 +326,12 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO> {
 	 * 5+ "Log indefinido"
 	 */
 	protected final void log(int num) {
-		num = num <= 4? num : 5;  
-		System.out.printf("LOG: %s \n", LOG[num]);
+		num = num <= 4? num : 5;
+		Console.log("LOG: " + LOG[num]);
 	}
 	protected final void log(int num, String texto) {
-		num = num <= 4? num : 5;  
-		System.out.printf("LOG: %s. %s \n", LOG[num], texto);
+		num = num <= 4? num : 5;
+		Console.log(String.format( "LOG: %s. %s \n", LOG[num], texto ));
 	}
 
 }

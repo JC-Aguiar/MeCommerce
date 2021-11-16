@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class ErroCadastroPOST extends MasterPOST {
+public class ErroCadastroPOST implements MasterPOST {
 
 	private final String campo;
 	private final String erro;

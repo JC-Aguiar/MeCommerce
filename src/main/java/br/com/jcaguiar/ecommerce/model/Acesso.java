@@ -55,24 +55,5 @@ final public class Acesso implements Entidade<Long> {
 
 	private String hardware;
 
-	/**<hr><h2>REPORTAR RELATÓRIO</h2>
-	 * Retorna texto dos atributos de acesso no padrão Console.Log <br>
-	 * @return String
-	 */
-	public String report() {
-		return String.format(
-				"<FILTRO DE ACESSOS> \n"
-					+ "\tACESSO:   %s\n"
-					+ "\tUSER:     %s\n"
-					+ "\tURL:      %s\n"
-					+ "\tDURAÇÃO:  %d.%ds\n"
-					+ "</FILTRO DE ACESSOS> \n",
-					DataFormato.formatar(data_acesso),
-					usuario.getEmail(),
-					url,
-					duracao.getSeconds(),
-					duracao.getNano()
-		);
-	}
 
 }

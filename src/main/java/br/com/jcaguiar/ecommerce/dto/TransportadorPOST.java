@@ -1,14 +1,14 @@
 package br.com.jcaguiar.ecommerce.dto;
 
-import javax.validation.constraints.NotNull;
-
 import br.com.jcaguiar.ecommerce.model.Empresa;
 import br.com.jcaguiar.ecommerce.model.Endereco;
 import br.com.jcaguiar.ecommerce.model.Usuario;
 import lombok.Getter;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
-final public class TransportadorPOST extends MasterPOST {
+final public class TransportadorPOST implements MasterPOST {
 	
 	@NotNull Empresa<Short> empresa;
 	@NotNull Usuario usuario;

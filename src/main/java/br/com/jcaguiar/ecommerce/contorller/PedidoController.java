@@ -1,24 +1,23 @@
 package br.com.jcaguiar.ecommerce.contorller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
+import br.com.jcaguiar.ecommerce.dto.PedidoPOST;
+import br.com.jcaguiar.ecommerce.model.Pedido;
+import br.com.jcaguiar.ecommerce.projection.PedidoGET;
+import br.com.jcaguiar.ecommerce.service.PedidoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.jcaguiar.ecommerce.dto.PedidoPOST;
-import br.com.jcaguiar.ecommerce.model.Pedido;
-import br.com.jcaguiar.ecommerce.service.PedidoService;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/pedido")
-public class PedidoController extends MasterController<Pedido, Long, PedidoPOST> {
+public class PedidoController extends MasterController<Pedido, Long, PedidoPOST, PedidoGET> {
 
 	public PedidoController(PedidoService pedidoService) {
-		super(Pedido.class, PedidoPOST.class, "pedido", pedidoService);
+		super(pedidoService);
 	}
 
 	@Override

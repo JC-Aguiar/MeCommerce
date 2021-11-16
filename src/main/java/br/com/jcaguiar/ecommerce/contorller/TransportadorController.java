@@ -1,24 +1,23 @@
 package br.com.jcaguiar.ecommerce.contorller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
+import br.com.jcaguiar.ecommerce.dto.TransportadorPOST;
+import br.com.jcaguiar.ecommerce.model.Transportador;
+import br.com.jcaguiar.ecommerce.projection.TransportadorGET;
+import br.com.jcaguiar.ecommerce.service.TransportadorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.jcaguiar.ecommerce.model.Transportador;
-import br.com.jcaguiar.ecommerce.projection.TransportadorGET;
-import br.com.jcaguiar.ecommerce.service.TransportadorService;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/transp")
-public class TransportadorController extends MasterController<Transportador, Short, TransportadorGET> {
+public class TransportadorController extends MasterController<Transportador, Short, TransportadorPOST, TransportadorGET> {
 
 	public TransportadorController(TransportadorService transpService) {
-		super(Transportador.class, TransportadorGET.class, "transp", transpService);
+		super(transpService);
 	}
 
 	@Override

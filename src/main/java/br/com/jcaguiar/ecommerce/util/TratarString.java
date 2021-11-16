@@ -1,8 +1,14 @@
 package br.com.jcaguiar.ecommerce.util;
 
+import br.com.jcaguiar.ecommerce.Console;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class TratarString {
 	
@@ -27,19 +33,42 @@ public final class TratarString {
 		return textoFinal;
 	}
 
-	public static String stackTraceToString(StackTraceElement[] stack) {
-		String text = "";
+	public static String stackTraceToString(@NotNull StackTraceElement[] stack) {
+		Console.log("<STACK-TRACE-TO-STRING>", +1);
+		String finalStack = "";
+		Console.log("STACK SIZE: " + stack.length);
+		//Tratando cada Element da StrackTraceElement
 		for(StackTraceElement element : stack) {
-			final String elementText = element.toString();
-			String[] elementArray = elementText.split(".");
-			final int elementSize = elementArray.length;
-			text += Arrays.stream(elementArray)
-					.skip(elementSize - 3)
-					.toString()
-					+ "\n";
+			//Convertendo Element para String
+			final String frase = element.toString();
+			Console.log("FRASE: " + frase);
+			//Dividindo a frase em palavras, tendo como divisória o sinal "."
+			String[] palavras = frase.split("\\.");
+			Console.log("QUANT. PALAVRAS: " + palavras.length);
+			//Recortando apenas o que importa: 3 últimas palavras da frase
+			String text = Stream.of(palavras)
+					.skip(palavras.length - 2)
+					.collect(Collectors.joining("."));
+			Console.log("PRINCIPAL: " + text);
+			finalStack += text + "\n";
 		}
-		return text;
+		Console.log("STACK FINAL: ");
+		Stream.of(
+				finalStack.split("\n"))
+				.forEach(Console::log);
+		Console.log("</STACK-TRACE-TO-STRING>", -1);
+		return finalStack;
+	}
 
+	public static String getMainException(@NotBlank String text) {
+		return getEntre(text, "(", ")");
+	}
+
+	//TODO: Aperfeiçoar com Java 8
+	public static String getEntre(@NotBlank String text, @NotBlank String charSequenceStart, @NotBlank String charSequenceEnd) {
+		final int start = text.indexOf(charSequenceStart);
+		final int end = text.indexOf(charSequenceEnd);
+		return text.substring(start, end);
 	}
 	
 	public static int paraInteiro(String text) throws NumberFormatException {

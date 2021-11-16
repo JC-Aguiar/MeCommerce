@@ -1,10 +1,12 @@
 package br.com.jcaguiar.ecommerce.filter;
 
+import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.model.Acesso;
 import br.com.jcaguiar.ecommerce.model.Produto;
 import br.com.jcaguiar.ecommerce.model.Usuario;
 import br.com.jcaguiar.ecommerce.service.ProdutoService;
 import br.com.jcaguiar.ecommerce.service.UsuarioService;
+import br.com.jcaguiar.ecommerce.util.DataFormato;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -20,25 +22,40 @@ public class AcessoFilter implements HandlerInterceptor {
 
 	@Autowired UsuarioService userService;
 	@Autowired ProdutoService prodService;
+	private Usuario usuario;
+	private Acesso acesso;
 
 	@Override
 	final public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 	throws Exception {
-		final Usuario USUARIO = getUsuarioLogin(request);
-		final Acesso ACESSO = Acesso.builder()
-				.usuario(USUARIO)
+		usuario = getUsuarioLogin(request);
+		acesso = Acesso.builder()
+				.usuario(usuario)
 				.url(request.getRequestURI())
 				.build();
-		request.setAttribute("acesso", ACESSO);
+//		request.setAttribute("acesso", acesso);
 		return true;
 	}
 
 	@Override
 	final public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
 	throws Exception {
-		Acesso acesso = (Acesso) request.getAttribute("acesso");
-		acesso.setDuracao( Duration.between(acesso.getData_acesso(), LocalDateTime.now()) );
-		System.out.printf( acesso.report() );
+		acesso.setDuracao(
+				Duration.between(acesso.getData_acesso(), LocalDateTime.now())
+		);
+		Console.log(String.format(
+				"<FILTRO DE ACESSOS> \n"
+				+ "\tACESSO:   %s\n"
+				+ "\tUSER:     %s\n"
+				+ "\tURL:      %s\n"
+				+ "\tDURAÇÃO:  %d.%ds\n"
+				+ "</FILTRO DE ACESSOS> \n",
+				DataFormato.formatar(acesso.getData_acesso()),
+				usuario.getEmail(),
+				acesso.getUrl(),
+				acesso.getDuracao().getSeconds(),
+				acesso.getDuracao().getNano())
+		);
 		//HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
 	}
 	
@@ -49,7 +66,9 @@ public class AcessoFilter implements HandlerInterceptor {
 			return (Usuario) userService.findByNomeContaining(USER_NAME).get(0);
 		}
 		catch (Exception e) {
-			return Usuario.builder().email("{Usuario-não-logado}").build();
+			return Usuario.builder()
+					.email("{Usuario-não-logado}")
+					.build();
 		}
 	}
 	

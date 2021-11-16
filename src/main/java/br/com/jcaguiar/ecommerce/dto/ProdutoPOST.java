@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @FieldDefaults(level = AccessLevel.PRIVATE)
-final public class ProdutoPOST extends MasterPOST {
+final public class ProdutoPOST implements MasterPOST {
 	
 	String categoriaNome;
 	List<String> marcaNome;

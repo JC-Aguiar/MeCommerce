@@ -4,7 +4,7 @@ import br.com.jcaguiar.ecommerce.dto.MasterPOST;
 import lombok.Getter;
 
 @Getter
-public final class TokenDto extends MasterPOST {
+public final class TokenDto implements MasterPOST {
 
 	public String token;
 	public String tipo;

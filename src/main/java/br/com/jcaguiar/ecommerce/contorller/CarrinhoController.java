@@ -1,24 +1,23 @@
 package br.com.jcaguiar.ecommerce.contorller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
+import br.com.jcaguiar.ecommerce.dto.CarrinhoPOST;
+import br.com.jcaguiar.ecommerce.model.Carrinho;
+import br.com.jcaguiar.ecommerce.projection.CarrinhoGET;
+import br.com.jcaguiar.ecommerce.service.CarrinhoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.jcaguiar.ecommerce.dto.CarrinhoPOST;
-import br.com.jcaguiar.ecommerce.model.Carrinho;
-import br.com.jcaguiar.ecommerce.service.CarrinhoService;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/carrinho")
-public class CarrinhoController extends MasterController<Carrinho, Long, CarrinhoPOST> {
+public class CarrinhoController extends MasterController<Carrinho, Long, CarrinhoPOST, CarrinhoGET> {
 
 	public CarrinhoController(CarrinhoService carrinhoService) {
-		super(Carrinho.class, CarrinhoPOST.class, "carrinho", carrinhoService);
+		super(carrinhoService);
 	}
 
 	@Override

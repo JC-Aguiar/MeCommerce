@@ -3,7 +3,6 @@ package br.com.jcaguiar.ecommerce.contorller;
 import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.dto.ProdutoPOST;
 import br.com.jcaguiar.ecommerce.exception.CadastroDuplicadoException;
-import br.com.jcaguiar.ecommerce.exception.ErroInesperado;
 import br.com.jcaguiar.ecommerce.model.*;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
 import br.com.jcaguiar.ecommerce.projection.ProdutoAdmGET;
@@ -13,7 +12,9 @@ import br.com.jcaguiar.ecommerce.util.LeitorCsv;
 import br.com.jcaguiar.ecommerce.util.TratarString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +30,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("**/produto")
-public class ProdutoController extends MasterController<Produto, Integer, ProdutoPOST>{
+public class ProdutoController extends MasterController<Produto, Integer, ProdutoPOST, ProdutoUserGET>{
 	
 	@Autowired SetorService setorService;
 	@Autowired CategoriaService categoriaService;
@@ -38,12 +39,7 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 	
 
 	public ProdutoController(ProdutoService produtoService) {
-		super(
-				Produto.class,
-				ProdutoPOST.class,
-				"produto",
-				produtoService
-		);
+		super(produtoService);
 	}
 	
 
@@ -57,32 +53,31 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 	@PostMapping("/filtrar")
 	@Transactional
 	public ResponseEntity<?> buscarTodos(@RequestBody ProdutoPOST produtoPost) {
-		try {
-			//Iniciando variáveis
-			List<Produto> produtos;
-			List<ProdutoUserGET> produtosGET;
-			Produto produto;
-			//Exibindo DTO
-			Console.log("ProdutoDTO: ");
-			Console.log( produtoPost.toString() );
-			//Convertendo DTO para Entidade e anulando atributos inconvenientes para a consulta
-			produto = conversorEntidade(produtoPost);
-			produto.resetDatas();
-			//Criando e configurando exemplo de produto para a consulta
-			//TODO: criar uma classe ExampleMatcher estático para evitar criação de novas instâncias
-			ExampleMatcher matcher = ExampleMatcher.matchingAll()
-					.withIgnorePaths("id")
-					.withIgnorePaths("ativo")
-					.withIgnorePaths("categoria_data_cadastro")
-					.withIgnoreCase()
-					.withIgnoreNullValues()
-					.withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-			Example<Produto> produtoExemplo = Example.of(produto, matcher);
-			//Consultando produtos com base no exemplo
-			produtos = ((ProdutoService) MASTER_SERVICE).findAll(produtoExemplo);
-			//Convertendo Entidade em DTO
-			Console.log("Convertendo dados");
-			produtosGET = (List<ProdutoUserGET>) conversorDto(produtos, ProdutoUserGET.class);
+		//Iniciando variáveis
+		List<Produto> produtos;
+		List<ProdutoUserGET> produtosGET;
+		Produto produto;
+		//Exibindo DTO
+		Console.log("ProdutoDTO: ");
+		Console.log( produtoPost.toString() );
+		//Convertendo DTO para Entidade e anulando atributos inconvenientes para a consulta
+		produto = conversorEntidade(produtoPost);
+		produto.resetDatas();
+		//Criando e configurando exemplo de produto para a consulta
+		//TODO: criar uma classe ExampleMatcher estático para evitar criação de novas instâncias
+		ExampleMatcher matcher = ExampleMatcher.matchingAll()
+				.withIgnorePaths("id")
+				.withIgnorePaths("ativo")
+				.withIgnorePaths("categoria_data_cadastro")
+				.withIgnoreCase()
+				.withIgnoreNullValues()
+				.withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+		Example<Produto> produtoExemplo = Example.of(produto, matcher);
+		//Consultando produtos com base no exemplo
+		produtos = ((ProdutoService) masterService).findAll(produtoExemplo);
+		//Convertendo Entidade em DTO
+		Console.log("Convertendo dados");
+		produtosGET = (List<ProdutoUserGET>) conversorDto(produtos, ProdutoUserGET.class);
 //			final short totalItens = (short) produtosGET.size();
 //			final short quantidade = (short) (totalItens/10);
 //			//Criando paginação com ordenação
@@ -92,14 +87,9 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 //					PageRequest.of(quantidade, 10, ordenacao).first(),
 //					totalItens
 //			);
-			//Retornando resposta
-			Console.log("Reportando resposta");
-			return paginanar(produtosGET, Sort.by("id").ascending(), 0);
-		//EM CASO DE ERRO
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new ErroInesperado(e);
-		}
+		//Retornando resposta
+		Console.log("Reportando resposta");
+		return paginanar(produtosGET, Sort.by("id").ascending(), 0);
 	}
 	
 	
@@ -231,7 +221,7 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 				produto.setVotos(0);
 				//Populando na lista final de Produtos
 				Console.log("Salvando produto");
-				produtos.add( ((ProdutoService) MASTER_SERVICE).salvar(produto) );
+				produtos.add( ((ProdutoService) masterService).salvar(produto) );
 				Console.log("Produto salvo com sucesso!");
 			}
 			//Fim do looping (linha)
@@ -246,9 +236,6 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 			//TODO: um único erro/exceção não deveria bloquear toda a importação. Tratar!
 			e.printStackTrace();
 			throw new CadastroDuplicadoException("SKU já consta em uso. Favor tentar novamente com outro.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new ErroInesperado(e);
 		}
 	}
 
@@ -274,7 +261,7 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 	@DeleteMapping("/all")
 	@Transactional
 	public ResponseEntity<?> deletAll() {
-		((ProdutoService) MASTER_SERVICE).removeAll();
+		((ProdutoService) masterService).removeAll();
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	

@@ -1,24 +1,23 @@
 package br.com.jcaguiar.ecommerce.contorller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
+import br.com.jcaguiar.ecommerce.dto.CategoriaPOST;
+import br.com.jcaguiar.ecommerce.model.Categoria;
+import br.com.jcaguiar.ecommerce.projection.CategoriaGET;
+import br.com.jcaguiar.ecommerce.service.CategoriaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.jcaguiar.ecommerce.dto.CategoriaPOST;
-import br.com.jcaguiar.ecommerce.model.Categoria;
-import br.com.jcaguiar.ecommerce.service.CategoriaService;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/categoria")
-public class CategoriaController extends MasterController<Categoria, Short, CategoriaPOST> {
+public class CategoriaController extends MasterController<Categoria, Short, CategoriaPOST, CategoriaGET> {
 
 	public CategoriaController(CategoriaService categoriaService) {
-		super(Categoria.class, CategoriaPOST.class, "categoria", categoriaService);
+		super(categoriaService);
 	}
 
 	@Override

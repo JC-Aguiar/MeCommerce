@@ -3,7 +3,6 @@ package br.com.jcaguiar.ecommerce.contorller;
 import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.dto.UsuarioPOST;
 import br.com.jcaguiar.ecommerce.exception.CadastroDuplicadoException;
-import br.com.jcaguiar.ecommerce.exception.ErroInesperado;
 import br.com.jcaguiar.ecommerce.model.Perfil;
 import br.com.jcaguiar.ecommerce.model.PerfilTipo;
 import br.com.jcaguiar.ecommerce.model.Usuario;
@@ -40,7 +39,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("user")
-public class UsuarioController extends MasterController<Usuario, Integer, UsuarioPOST> {
+public class UsuarioController extends MasterController<Usuario, Integer, UsuarioPOST, UsuarioGET> {
 
 	@Autowired UsuarioService userService;
 	@Autowired PerfilService perfilService;
@@ -54,12 +53,7 @@ public class UsuarioController extends MasterController<Usuario, Integer, Usuari
 	 * @param userService (UsuarioService) será a Classe de serviço DAO.
 	 */
 	public UsuarioController(UsuarioService userService) {
-		super(
-				Usuario.class,
-				UsuarioPOST.class,
-				"user",
-				userService
-		);
+		super(userService);
 	}
 
 
@@ -89,37 +83,27 @@ public class UsuarioController extends MasterController<Usuario, Integer, Usuari
 		} catch (PersistenceException | DataIntegrityViolationException e) {
 			e.printStackTrace();
 			throw new CadastroDuplicadoException("E-mail já consta em uso. Favor tentar novamente com outro.");
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new ErroInesperado(e);
 		}
 	}
 
+
 	@Override
-	public ResponseEntity<?> atualizar(@Valid Usuario objeto, HttpServletRequest request) {
-		// TODO Auto-generated method stub
+	public ResponseEntity<?> atualizar(Usuario objeto, HttpServletRequest request) {
 		return null;
 	}
 
 	@Override
-	public ResponseEntity<?> atualizarTodos(@Valid List<Usuario> objeto, HttpServletRequest request) {
-		// TODO Auto-generated method stub
+	public ResponseEntity<?> atualizarTodos(List<Usuario> objeto, HttpServletRequest request) {
 		return null;
 	}
 
 	@Override
-	public ResponseEntity<?> deletar(@Valid Usuario objeto, HttpServletRequest request) {
-		// TODO Auto-generated method stub
+	public ResponseEntity<?> deletar(Usuario objeto, HttpServletRequest request) {
 		return null;
 	}
 
 	@Override
-	public ResponseEntity<?> deletarTodos(@Valid List<Usuario> objeto, HttpServletRequest request) {
-		// TODO Auto-generated method stub
+	public ResponseEntity<?> deletarTodos(List<Usuario> objeto, HttpServletRequest request) {
 		return null;
 	}
-
-	
-	
-	
 }

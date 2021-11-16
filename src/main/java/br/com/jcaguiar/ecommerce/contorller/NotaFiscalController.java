@@ -1,24 +1,23 @@
 package br.com.jcaguiar.ecommerce.contorller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
+import br.com.jcaguiar.ecommerce.dto.NotaFiscalPOST;
+import br.com.jcaguiar.ecommerce.model.NotaFiscal;
+import br.com.jcaguiar.ecommerce.projection.NotaFiscalGET;
+import br.com.jcaguiar.ecommerce.service.NotaFiscalService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.jcaguiar.ecommerce.dto.NotaFiscalPOST;
-import br.com.jcaguiar.ecommerce.model.NotaFiscal;
-import br.com.jcaguiar.ecommerce.service.NotaFiscalService;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/nf")
-public class NotaFiscalController extends MasterController<NotaFiscal, Long, NotaFiscalPOST> {
+public class NotaFiscalController extends MasterController<NotaFiscal, Long, NotaFiscalPOST, NotaFiscalGET> {
 
 	public NotaFiscalController(NotaFiscalService nfService) {
-		super(NotaFiscal.class, NotaFiscalPOST.class, "nf", nfService);
+		super(nfService);
 	}
 
 	@Override
