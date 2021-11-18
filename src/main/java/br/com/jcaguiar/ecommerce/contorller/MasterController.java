@@ -5,6 +5,7 @@ import br.com.jcaguiar.ecommerce.dto.MasterPOST;
 import br.com.jcaguiar.ecommerce.model.Entidade;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
 import br.com.jcaguiar.ecommerce.service.MasterService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ConfigurationException;
 import org.modelmapper.MappingException;
@@ -42,9 +43,9 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO extends
 	//TODO: revisar se devo manter atributos "protected"
 
 	@Autowired protected ModelMapper modelMapper;
-	@Autowired protected Class<OBJ> classeModelo;
-	@Autowired protected Class<DTO> classeDtoPost;
-	@Autowired protected Class<REPORT> classeDtoGet;
+	@Getter	protected Class<OBJ> classeModelo;
+	@Getter protected Class<DTO> classeDtoPost;
+	@Getter protected Class<REPORT> classeDtoGet;
 	//@Autowired protected URL endPoint;
 
 	protected final MasterService<OBJ, ID> masterService;
@@ -90,34 +91,26 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO extends
 	@GetMapping
 	@Transactional
 	public ResponseEntity<?> buscarTodos(HttpServletRequest request) {
-
 		/*
 		TODO: métodos de implementar opção de retorno DTO de acordo com o perfil do usuário: <br>
 		  		1. MasterController possui um outro atributo para informar DTO adm.  <br>
 			  	2. As classes filho podem acionar um método do MasterController, informando os tipos
 			  	   de DTO via parâmetro
 		 */
-
 		//Preparando ordenação
-		final Sort ordene = Sort.by("id").ascending();
+		final Sort ordem = Sort.by("id").ascending();
 		//Validando perfil do usuário
 		if( request.isUserInRole(ADM) || admSql ) {
 			//Consulta ADMIN
 			log(0);
-			Console.log("Coletando dados");
-			return paginanar(masterService.findAll(), ordene, 0);
-//			Console.log("Convertendo dados");
-//			dto = conversorDto(entity, classeModelo);
+			return paginanar(masterService.findAll(), ordem, 0);
 		}
-		else {
-			//Consulta USER
-			log(1);
-			Console.log("Coletando dados");
-			List<OBJ> entity = masterService.findAll();
-			Console.log("Convertendo dados");
-			List<? extends MasterGET> dto = conversorDto(entity, classeDtoGet);
-			return paginanar(dto, ordene, 0);
-		}
+		//Consulta USER
+		log(1);
+		List<OBJ> entity = masterService.findAll();
+		Console.log("Convertendo dados");
+		List<? extends MasterGET> dto = conversorDto(entity, classeDtoGet);
+		return paginanar(dto, ordem, 0);
 	}
 
 	/**<hr><h2>BUSCA POR ID - EXATA</h2>
@@ -130,21 +123,18 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO extends
 	public ResponseEntity<?> buscarId(@PathVariable(name = "id") ID id, HttpServletRequest request) {
 		//Preparando ordenação
 		final Sort ORDENE = Sort.by("id").ascending();
-
-		if(id == null){
-			throw new NullPointerException();
-		}
-		
 		//Usuário da consulta ADMIN?
 		if( request.isUserInRole(ADM) || admSql) {
 			log(0);//Consulta ADMIN
-			final Optional<?> OBJ_VO = masterService.findById(id);
-			return new ResponseEntity<>(OBJ_VO, HttpStatus.OK);
+			return new ResponseEntity<>(masterService.findById(id), HttpStatus.OK);
 		}
 		log(1);//Consulta USER
-		final MasterGET OBJ_VO = masterService.findId(id);
-		
-		return new ResponseEntity<>(OBJ_VO, HttpStatus.OK);
+		final Optional<OBJ> obj = Optional.of( masterService.findOne(id) );
+		MasterGET dto = null;
+		if(obj.isPresent()) {
+			dto = conversorDto(obj.get(), classeDtoGet); 
+		}
+		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 
 	/**<hr><h2>BUSCA POR NOME - CONTÊM</h2>

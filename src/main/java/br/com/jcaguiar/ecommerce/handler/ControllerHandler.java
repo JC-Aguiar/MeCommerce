@@ -1,5 +1,6 @@
 package br.com.jcaguiar.ecommerce.handler;
 
+import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.dto.ErroCadastroPOST;
 import br.com.jcaguiar.ecommerce.exception.CadastroDuplicadoException;
 import br.com.jcaguiar.ecommerce.exception.ErroInesperadoException;
@@ -9,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,17 +72,18 @@ public final class ControllerHandler {
 	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(StringIndexOutOfBoundsException.class)
 	public ErroInesperadoException handler(StringIndexOutOfBoundsException exc) {
-		return new ErroInesperadoException(500, exc.getMessage());
+		return new ErroInesperadoException(500, "INTERNAL SERVER ERROR", exc.getMessage());
 	}
 
 	//@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErroInesperadoException> handler(Exception exc) {
-		//Iniciando variáveis
+	public ResponseStatusException handler(Exception exc) {
 		String mensagem;
-		String tipoExc = exc.getClass().toString();
+		String tipoExc = exc.getClass().getSimpleName();
 		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+		exc.getSuppressed();
 		//Tratando mensagem dependendo do erro
+		Console.log("[ErroInesperadoException] tipoExc: " + tipoExc);
 		switch (tipoExc) {
 			case "ConfigurationException":
 				mensagem = "A configuração entre cliente e servidor não está correta.\n";
@@ -103,15 +105,12 @@ public final class ControllerHandler {
 				mensagem = exc.getMessage() + "\n";
 				mensagem = mensagem.length() < 2 ? "Inconformidade em manutenção (#EXCEP-11).\n" : mensagem;
 		}
-		//Formando mensagem completa
-		mensagem = ALERTA + mensagem + COMPLEMENTO;
 		//Persistindo stackTrace do erro no banco
+		Console.log("Salvando exception no banco de dados.");
 		problemaService.salvar( new Problema(exc) );
 		//Retornando mensagem de erro
-		return new ResponseEntity<>(
-				new ErroInesperadoException(status.value(), mensagem),
-				status
-		);
+		Console.log("Retornando mensagem ao cliente.");
+		throw new ResponseStatusException(status, mensagem);
 	}
 
 //	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)

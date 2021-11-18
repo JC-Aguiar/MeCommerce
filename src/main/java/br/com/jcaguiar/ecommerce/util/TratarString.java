@@ -34,29 +34,19 @@ public final class TratarString {
 	}
 
 	public static String stackTraceToString(@NotNull StackTraceElement[] stack) {
-		Console.log("<STACK-TRACE-TO-STRING>", +1);
 		String finalStack = "";
-		Console.log("STACK SIZE: " + stack.length);
 		//Tratando cada Element da StrackTraceElement
 		for(StackTraceElement element : stack) {
 			//Convertendo Element para String
 			final String frase = element.toString();
-			Console.log("FRASE: " + frase);
 			//Dividindo a frase em palavras, tendo como divisória o sinal "."
 			String[] palavras = frase.split("\\.");
-			Console.log("QUANT. PALAVRAS: " + palavras.length);
 			//Recortando apenas o que importa: 3 últimas palavras da frase
 			String text = Stream.of(palavras)
 					.skip(palavras.length - 2)
 					.collect(Collectors.joining("."));
-			Console.log("PRINCIPAL: " + text);
 			finalStack += text + "\n";
 		}
-		Console.log("STACK FINAL: ");
-		Stream.of(
-				finalStack.split("\n"))
-				.forEach(Console::log);
-		Console.log("</STACK-TRACE-TO-STRING>", -1);
 		return finalStack;
 	}
 
