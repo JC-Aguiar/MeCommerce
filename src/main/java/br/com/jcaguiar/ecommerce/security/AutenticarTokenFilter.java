@@ -121,7 +121,7 @@ final public class AutenticarTokenFilter extends OncePerRequestFilter{
 	 */
 	private boolean autenticarUsuario(int userioId) {
 		try {
-			Usuario usuario = userService.findById(userioId).get();
+			Usuario usuario = userService.findById(userioId);
 			List<Perfil> userPerfil = usuario.getAuthorities();
 			String userPerfilString = usuario.getAuthoritiesToString();
 			Authentication dadosUsuario = new UsernamePasswordAuthenticationToken(

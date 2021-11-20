@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**<h1>CONCEITO</h1>
  * Classe mãe que define o básico de todos os demais crontrollers. <br>
@@ -129,11 +128,8 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO extends
 			return new ResponseEntity<>(masterService.findById(id), HttpStatus.OK);
 		}
 		log(1);//Consulta USER
-		final Optional<OBJ> obj = Optional.of( masterService.findOne(id) );
-		MasterGET dto = null;
-		if(obj.isPresent()) {
-			dto = conversorDto(obj.get(), classeDtoGet); 
-		}
+		final OBJ obj = masterService.findOne(id);
+		final MasterGET dto = conversorDto(obj, classeDtoGet);
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 
@@ -253,7 +249,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO extends
 	throws IllegalArgumentException, ConfigurationException, MappingException {
 		return modelMapper.map(object, classGET);
 	}
-	
+
 	
 	/**<hr><h2>CONVERSOR (LISTA): ENTIDADE ~ DTO</h2>
 	 * 

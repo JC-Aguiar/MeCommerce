@@ -10,13 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,27 +70,27 @@ public final class ControllerHandler {
 		);
 	}
 
-	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
-	@ExceptionHandler(StringIndexOutOfBoundsException.class)
-	public ErroInesperadoException handler(StringIndexOutOfBoundsException exc) {
-		return new ErroInesperadoException(500, "INTERNAL SERVER ERROR", exc.getMessage());
-	}
+//	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+//	@ExceptionHandler(StringIndexOutOfBoundsException.class)
+//	public ErroInesperadoException handler(StringIndexOutOfBoundsException exc) {
+//		return new ErroInesperadoException(500, "INTERNAL SERVER ERROR", exc.getMessage());
+//	}
 
 	//@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(Exception.class)
-	public ResponseStatusException handler(Exception exc) {
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<?> handler(RuntimeException exc, HttpServletRequest request) {
+		Console.log("<CONTROLLER-HANDLER>", +1);
 		String mensagem;
 		String tipoExc = exc.getClass().getSimpleName();
 		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-		exc.getSuppressed();
+		//exc.getSuppressed();
 		//Tratando mensagem dependendo do erro
-		Console.log("[ErroInesperadoException] tipoExc: " + tipoExc);
 		switch (tipoExc) {
 			case "ConfigurationException":
 				mensagem = "A configuração entre cliente e servidor não está correta.\n";
 				break;
 			case "IllegalArgumentException":
-				mensagem = "Alguns dos dados enviados estão em desacordo com os requisitos internos.\n";
+				mensagem = "Alguns dos dados enviados/solicitados estão em desacordo com os requisitos internos.\n";
 				status = HttpStatus.BAD_REQUEST;
 				break;
 			case "MappingException":
@@ -107,10 +108,15 @@ public final class ControllerHandler {
 		}
 		//Persistindo stackTrace do erro no banco
 		Console.log("Salvando exception no banco de dados.");
-		problemaService.salvar( new Problema(exc) );
+		Problema exception = problemaService.salvar( new Problema(exc) );
+		//Exibindo stack resumida dos erros
+
 		//Retornando mensagem de erro
 		Console.log("Retornando mensagem ao cliente.");
-		throw new ResponseStatusException(status, mensagem);
+		Console.log("</CONTROLLER-HANDLER>", -1);
+		return new ResponseEntity<ErroInesperadoException>(
+				new ErroInesperadoException(status, mensagem, request.getRequestURI()),
+				status);
 	}
 
 //	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)

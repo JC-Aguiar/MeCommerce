@@ -1,12 +1,9 @@
 package br.com.jcaguiar.ecommerce.util;
 
-import br.com.jcaguiar.ecommerce.Console;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,6 +45,43 @@ public final class TratarString {
 			finalStack += text + "\n";
 		}
 		return finalStack;
+	}
+
+	public static Map<String, String> mapStackTrace(@NotNull StackTraceElement[] stack) {
+		final Map<String, String> mappedStack = new HashMap<>();
+		short stackSize = (short) stack.length;
+		//Tratando cada Element da StrackTraceElement
+		for(StackTraceElement element : stack) {
+			//Convertendo Element em palavras separados por "."
+			final String frase = element.toString();
+			final String index = String.format("%03d", stackSize--);
+			String[] palavras = frase.split("\\.");
+			//Recortando apenas o que importa: 3 últimas palavras da frase
+			String text = Stream.of(palavras)
+					.skip(palavras.length - 2)
+					.collect(Collectors.joining("."));
+			//mappedStack += text + "\n";
+			mappedStack.put(index, text);
+		}
+		return mappedStack;
+	}
+
+	public static List<String> arrayStackTrace(@NotNull StackTraceElement[] stack) {
+		short stackSize = (short) stack.length;
+		final List<String> listStack = new ArrayList<>();
+		//Tratando cada Element da StrackTraceElement
+		for(StackTraceElement element : stack) {
+			//Convertendo Element em palavras separados por "."
+			final String frase = element.toString();
+			String[] palavras = frase.split("\\.");
+			//Recortando apenas o que importa: 3 últimas palavras da frase
+			String text = Stream.of(palavras)
+					.skip(palavras.length - 2)
+					.collect(Collectors.joining("."));
+			//listStack += text + "\n";
+			listStack.add(text);
+		}
+		return listStack;
 	}
 
 	public static String getMainException(@NotBlank String text) {

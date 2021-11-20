@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 @Configuration
 public class AcessoFilter implements HandlerInterceptor {
@@ -75,16 +74,15 @@ public class AcessoFilter implements HandlerInterceptor {
 	//PRODUTO CHECK
 	//UNFINISHED!!!!!!!!
 	final private Produto getProdutoAcesso(String url) {
-		final String[] URL = url.substring(1).split("/");
-		System.out.println("teste " + Arrays.toString(URL) );
-		if(!URL[0].startsWith("produto")) {
+		final String[] urlArray = url.substring(1).split("/");
+		if(!urlArray[0].startsWith("produto")) {
 			//cancele se url não aponta para /produto(s)
 			return Produto.builder().nome(("{Produto-não-acessado}")).build();
 		}
 		try {
 			//se converter o número após "produto/", retorne o produto desse id
-			final int PROD_ID = Integer.parseInt(URL[1]);
-			return prodService.findById(PROD_ID).get();
+			final int prodId = Integer.parseInt(urlArray[1]);
+			return prodService.findById(prodId);
 		}catch (Exception e) {
 			//cancele caso não identifique o produto ou o id do produto
 			return Produto.builder().nome(("{Produto-não-acessado}")).build();

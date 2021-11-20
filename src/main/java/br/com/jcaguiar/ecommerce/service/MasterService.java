@@ -5,8 +5,8 @@ import br.com.jcaguiar.ecommerce.repository.MasterRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public abstract class MasterService<OBJ, ID> {
@@ -48,8 +48,9 @@ public abstract class MasterService<OBJ, ID> {
 		return JPA_REPO.getOne(id);
 	}
 	
-	public Optional<OBJ> findById(ID id) {
-		return JPA_REPO.findById(id);
+	public OBJ findById(@NotBlank ID id) {
+		return JPA_REPO.findById(id)
+				.orElseThrow();
 	}
 	
 	public abstract MasterGET findId(ID id);

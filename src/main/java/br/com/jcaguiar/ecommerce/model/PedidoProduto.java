@@ -1,6 +1,6 @@
 package br.com.jcaguiar.ecommerce.model;
 
-import br.com.jcaguiar.ecommerce.util.JsonConverter;
+import br.com.jcaguiar.ecommerce.util.MapJsonConverter;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
@@ -29,7 +29,7 @@ final public class PedidoProduto extends EntidadeData<Integer> {
 	@Column(nullable = false)
 	private String categoria;
 
-	@Convert(converter = JsonConverter.class)
+	@Convert(converter = MapJsonConverter.class)
 	@Column(nullable = false)
 	private List<String> marca;
 
@@ -61,11 +61,11 @@ final public class PedidoProduto extends EntidadeData<Integer> {
 	private String codigo;
 
 	//ATRIBUTOS INDIRETOS
-	@Convert(converter = JsonConverter.class)
+	@Convert(converter = MapJsonConverter.class)
 	@Column(nullable = false)
 	private List<String> fornecedor;
 
-	@Convert(converter = JsonConverter.class)
+	@Convert(converter = MapJsonConverter.class)
 	@Column(nullable = false)
 	private List<String> imagens;
 }
