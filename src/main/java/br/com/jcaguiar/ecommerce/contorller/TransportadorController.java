@@ -17,7 +17,7 @@ import java.util.List;
 public class TransportadorController extends MasterController<Transportador, Short, TransportadorPOST, TransportadorGET> {
 
 	public TransportadorController(TransportadorService transpService) {
-		super(transpService);
+		super(transpService, Transportador.class, TransportadorPOST.class, TransportadorGET.class);
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class ProdutoController extends MasterController<Produto, Integer, Produt
 	
 
 	public ProdutoController(ProdutoService produtoService) {
-		super(produtoService);
+		super(produtoService, Produto.class, ProdutoPOST.class, ProdutoUserGET.class);
 	}
 	
 

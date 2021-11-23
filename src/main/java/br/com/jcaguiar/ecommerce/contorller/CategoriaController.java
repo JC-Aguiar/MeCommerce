@@ -17,7 +17,7 @@ import java.util.List;
 public class CategoriaController extends MasterController<Categoria, Short, CategoriaPOST, CategoriaGET> {
 
 	public CategoriaController(CategoriaService categoriaService) {
-		super(categoriaService);
+		super(categoriaService, Categoria.class, CategoriaPOST.class, CategoriaGET.class);
 	}
 
 	@Override

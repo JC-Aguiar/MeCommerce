@@ -1,8 +1,8 @@
 package br.com.jcaguiar.ecommerce.contorller;
 
-import br.com.jcaguiar.ecommerce.dto.ImagemProdutoPOST;
+import br.com.jcaguiar.ecommerce.dto.ProdutoImagemPOST;
 import br.com.jcaguiar.ecommerce.model.ProdutoImagem;
-import br.com.jcaguiar.ecommerce.projection.ImagemProdutoGET;
+import br.com.jcaguiar.ecommerce.projection.ProdutoImagemGET;
 import br.com.jcaguiar.ecommerce.service.ImagemProdutoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("**/imagem_produto")
-public class ImagemProdutoController extends MasterController<ProdutoImagem, Long, ImagemProdutoPOST, ImagemProdutoGET> {
+public class ImagemProdutoController extends MasterController<ProdutoImagem, Long, ProdutoImagemPOST, ProdutoImagemGET> {
 
 	public ImagemProdutoController(ImagemProdutoService imgService) {
-		super(imgService);
+		super(imgService, ProdutoImagem.class, ProdutoImagemPOST.class, ProdutoImagemGET.class);
 	}
 	
 	@Override

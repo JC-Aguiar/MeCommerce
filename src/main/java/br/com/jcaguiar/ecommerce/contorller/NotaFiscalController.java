@@ -17,7 +17,7 @@ import java.util.List;
 public class NotaFiscalController extends MasterController<NotaFiscal, Long, NotaFiscalPOST, NotaFiscalGET> {
 
 	public NotaFiscalController(NotaFiscalService nfService) {
-		super(nfService);
+		super(nfService, NotaFiscal.class, NotaFiscalPOST.class, NotaFiscalGET.class);
 	}
 
 	@Override

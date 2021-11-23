@@ -17,7 +17,7 @@ import java.util.List;
 public class CarrinhoController extends MasterController<Carrinho, Long, CarrinhoPOST, CarrinhoGET> {
 
 	public CarrinhoController(CarrinhoService carrinhoService) {
-		super(carrinhoService);
+		super(carrinhoService, Carrinho.class, CarrinhoPOST.class, CarrinhoGET.class);
 	}
 
 	@Override

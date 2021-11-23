@@ -27,7 +27,7 @@ final public class ProdutoAdmGET implements MasterGET {
 	private String material;
 	private String codigo;
 	private List<ForneceGET> fornece = new ArrayList<>();
-	private List<ImagemProdutoGET> imagem = new ArrayList<>();
+	private List<ProdutoImagemGET> imagem = new ArrayList<>();
 	private List<ComentarioGET> comentario = new ArrayList<>();
 	private int acessos;
 	private int votos;

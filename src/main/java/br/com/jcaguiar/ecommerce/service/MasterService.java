@@ -1,5 +1,6 @@
 package br.com.jcaguiar.ecommerce.service;
 
+import br.com.jcaguiar.ecommerce.exception.ClientSideException;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
 import br.com.jcaguiar.ecommerce.repository.MasterRepository;
 import org.springframework.data.domain.Sort;
@@ -49,8 +50,9 @@ public abstract class MasterService<OBJ, ID> {
 	}
 	
 	public OBJ findById(@NotBlank ID id) {
-		return JPA_REPO.findById(id)
-				.orElseThrow();
+		return JPA_REPO.findById(id).orElseThrow(
+						() -> new ClientSideException("Não existe o registro solicitado no banco de dados.")
+		);
 	}
 	
 	public abstract MasterGET findId(ID id);

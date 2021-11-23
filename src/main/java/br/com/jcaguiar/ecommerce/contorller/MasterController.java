@@ -5,7 +5,6 @@ import br.com.jcaguiar.ecommerce.dto.MasterPOST;
 import br.com.jcaguiar.ecommerce.model.Entidade;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
 import br.com.jcaguiar.ecommerce.service.MasterService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ConfigurationException;
 import org.modelmapper.MappingException;
@@ -42,12 +41,11 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO extends
 	//TODO: revisar se devo manter atributos "protected"
 
 	@Autowired protected ModelMapper modelMapper;
-	@Getter	protected Class<OBJ> classeModelo;
-	@Getter protected Class<DTO> classeDtoPost;
-	@Getter protected Class<REPORT> classeDtoGet;
-	//@Autowired protected URL endPoint;
-
 	protected final MasterService<OBJ, ID> masterService;
+	protected final Class<OBJ> classeModelo;
+	protected final Class<DTO> classeDtoPost;
+	protected final Class<REPORT> classeDtoGet;
+	//@Autowired protected URL endPoint;
 	protected boolean admSql = false;
 	protected short itensPorPagina = 12;
 	protected static final String ADM = "ROLE_ADM";
@@ -72,7 +70,8 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO extends
 	@PostMapping
 	@Transactional
 	public ResponseEntity<?> salvar(@RequestBody @Valid DTO dto, HttpServletRequest request, UriComponentsBuilder uriBuilder)
-	throws Exception {		
+	throws Exception {
+		//TODO: ainda necessário usar UriComponentsBuilder ?
 		//Convertendo DTO e Salvando
 		final OBJ objModel = conversorEntidade(dto);
 		final ID objModelId = (ID) objModel.getId();
@@ -98,13 +97,11 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO extends
 		 */
 		//Preparando ordenação
 		final Sort ordem = Sort.by("id").ascending();
-		//Validando perfil do usuário
+		//Selecionando tipo de objeto a ser retornado dependendo do perfil do usuário
 		if( request.isUserInRole(ADM) || admSql ) {
-			//Consulta ADMIN
 			log(0);
 			return paginanar(masterService.findAll(), ordem, 0);
 		}
-		//Consulta USER
 		log(1);
 		List<OBJ> entity = masterService.findAll();
 		Console.log("Convertendo dados");
@@ -128,7 +125,7 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO extends
 			return new ResponseEntity<>(masterService.findById(id), HttpStatus.OK);
 		}
 		log(1);//Consulta USER
-		final OBJ obj = masterService.findOne(id);
+		final OBJ obj = masterService.findById(id);
 		final MasterGET dto = conversorDto(obj, classeDtoGet);
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
@@ -247,6 +244,11 @@ public abstract class MasterController<OBJ extends Entidade<ID>, ID, DTO extends
 	 */
 	public MasterGET conversorDto(OBJ object, Class<? extends MasterGET> classGET)
 	throws IllegalArgumentException, ConfigurationException, MappingException {
+//		Field teste = MasterController.class.getField("classeDtoGet");
+//		Class<? extends Type> teste2 = teste.getGenericType().getClass();
+//		Class<? extends MasterGET> algo = objDtoGet.getClass();
+//		Console.log("[MASTER-CONTROLLER] algo = " + algo.toString());
+		//throw new NoSuchFieldException("Sistema não conseguiu conveter entidade em objeto.");
 		return modelMapper.map(object, classGET);
 	}
 

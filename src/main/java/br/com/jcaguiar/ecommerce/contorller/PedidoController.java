@@ -17,7 +17,7 @@ import java.util.List;
 public class PedidoController extends MasterController<Pedido, Long, PedidoPOST, PedidoGET> {
 
 	public PedidoController(PedidoService pedidoService) {
-		super(pedidoService);
+		super(pedidoService, Pedido.class, PedidoPOST.class, PedidoGET.class);
 	}
 
 	@Override

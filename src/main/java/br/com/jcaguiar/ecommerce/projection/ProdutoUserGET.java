@@ -20,7 +20,7 @@ final public class ProdutoUserGET implements MasterGET {
 	String tamanho;
 	String medidas;
 	String material;
-	List<ImagemProdutoGET> imagem = new ArrayList<>();
+	List<ProdutoImagemGET> imagem = new ArrayList<>();
 	List<ComentarioGET> comentario = new ArrayList<>();
 	int votos;
 	short nota;

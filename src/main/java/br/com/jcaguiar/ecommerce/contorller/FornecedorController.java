@@ -17,7 +17,7 @@ import java.util.List;
 public class FornecedorController extends MasterController<Fornecedor, Short, FornecedorPOST, FornecedorGET> {
 
 	public FornecedorController(FornecedorService fornecedorService) {
-		super(fornecedorService);
+		super(fornecedorService, Fornecedor.class, FornecedorPOST.class, FornecedorGET.class);
 	}
 
 	@Override

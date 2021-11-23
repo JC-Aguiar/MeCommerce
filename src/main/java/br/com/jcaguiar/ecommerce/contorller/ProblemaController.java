@@ -1,7 +1,7 @@
 package br.com.jcaguiar.ecommerce.contorller;
 
 import br.com.jcaguiar.ecommerce.Console;
-import br.com.jcaguiar.ecommerce.exception.ErroInesperadoException;
+import br.com.jcaguiar.ecommerce.exception.ErroInesperado;
 import br.com.jcaguiar.ecommerce.model.Problema;
 import br.com.jcaguiar.ecommerce.service.ProblemaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +17,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/erro")
-public class ProblemaController extends MasterController<Problema, Long, ErroInesperadoException, ErroInesperadoException> {
+public class ProblemaController extends MasterController<Problema, Long, ErroInesperado, ErroInesperado> {
 
 	@Autowired
 	private ProblemaService ERRO_SERVICE;
 
-	public ProblemaController(ProblemaService erroService) {
-		super(erroService);
+	public ProblemaController(ProblemaService problemaServiceService) {
+		super(problemaServiceService, Problema.class, ErroInesperado.class, ErroInesperado.class );
 	}
 
 	@Override
