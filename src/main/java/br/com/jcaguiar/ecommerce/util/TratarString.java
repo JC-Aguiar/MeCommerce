@@ -9,8 +9,11 @@ import java.util.stream.Stream;
 
 public final class TratarString {
 	
-	public static char sigla(String text) {
-		return text.charAt(0);
+	public static String sigla(@NotNull String text, @NotNull int quantidade) {
+		if(text.length() >= quantidade) {
+			return text.substring(0, quantidade-1);
+		}
+		return text.substring(0, 0);
 	}
 	
 	public static String getDepois(String text, String targetCharSequence) {

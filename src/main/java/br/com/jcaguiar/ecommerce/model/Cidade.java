@@ -19,7 +19,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @Entity(name = "cidade")
-final public class Cidade implements Entidade<Integer >{
+final public class Cidade extends Entidade<Integer> {
 	
 	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;

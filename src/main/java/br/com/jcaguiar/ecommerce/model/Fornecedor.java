@@ -22,7 +22,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "fornecedor")

@@ -21,7 +21,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @Entity(name = "categoria")
-final public class Categoria implements Entidade<Short> {
+final public class Categoria extends Entidade<Short> {
 
 	/**
 	 * TODO: aprender como criar chaves compostas. Embora a chave primária seja o id, nome deve ser único

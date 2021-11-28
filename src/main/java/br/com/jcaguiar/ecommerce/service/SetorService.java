@@ -1,6 +1,5 @@
 package br.com.jcaguiar.ecommerce.service;
 
-import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.model.Setor;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
 import br.com.jcaguiar.ecommerce.repository.SetorRepository;
@@ -8,6 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SetorService extends MasterService<Setor, Short> {
@@ -15,26 +15,33 @@ public class SetorService extends MasterService<Setor, Short> {
 	public SetorService(SetorRepository jpaRepo) {
 		super(jpaRepo);
 	}
-	
+
+	/**
+	 * <hr><h2>PEGUE OU CRIE</h2>
+	 * Verifica se existe algum registro para retornar ou cria um novo registro <br>
+	 * @param nome
+	 * @return
+	 */
 	public Setor validarByNome(String nome) {
-		Console.log("<SETOR-SERVICE>", +1);
-		List<Setor> setores = findObjectByNome(nome);
-		Setor setor;
-		if( setores.size() == 0 ) {
-			setor = Setor.builder()
-					.nome(nome)
-					.build();
-			JPA_REPO.saveAndFlush(setor);
-			Console.log(String.format(
-					"Novo Setor criado: %s %d", nome, setor.getId()));
-		}
-		else {
-			setor = setores.get(0);
-			Console.log(String.format(
-					"Setor %s Identificado", nome));
-		}
-		Console.log("</SETOR-SERVICE>", -1);
-		return setor;
+		Optional<Setor> setor = findObjectByNome(nome);
+		return setor.map(Setor::getSetor).orElse(
+				JPA_REPO.saveAndFlush(Setor.builder().nome(nome).build()
+				));
+//		if( setores.size() == 0 ) {
+//			setor = Setor.builder()
+//					.nome(nome)
+//					.build();
+//			JPA_REPO.saveAndFlush(setor);
+//			Console.log(String.format(
+//					"Novo Setor criado: %s %d", nome, setor.getId()));
+//		}
+//		else {
+//			setor = setores.get(0);
+//			Console.log(String.format(
+//					"Setor %s Identificado", nome));
+//		}
+//		Console.log("</SETOR-SERVICE>", -1);
+//		return setor;
 	}
 
 	@Override
@@ -98,7 +105,7 @@ public class SetorService extends MasterService<Setor, Short> {
 	}
 	
 
-	public List<Setor> findObjectByNome(String nome) {
+	public Optional<Setor> findObjectByNome(String nome) {
 		return ((SetorRepository) JPA_REPO).findAllByNomeContaining(nome);
 	}
 

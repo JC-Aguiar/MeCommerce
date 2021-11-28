@@ -1,16 +1,11 @@
 package br.com.jcaguiar.ecommerce.model;
 
+import lombok.*;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.*;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**<h1>CONCEITO</h1>
  * Esta classe intermedia Usuários/Clientes e os Pedidos. <br>
@@ -31,7 +26,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @Entity(name = "carrinho")
-final public class Carrinho implements Entidade<Long> {
+final public class Carrinho extends Entidade<Long> {
 
 	/**
 	 * TODO: avisos que alertam de promoções do mesmo fornecedor.

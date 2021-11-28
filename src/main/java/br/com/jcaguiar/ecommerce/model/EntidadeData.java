@@ -1,10 +1,7 @@
 package br.com.jcaguiar.ecommerce.model;
 
 import br.com.jcaguiar.ecommerce.util.DataFormato;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.MappedSuperclass;
@@ -24,11 +21,11 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class EntidadeData<ID> implements Entidade<ID> {
+public abstract class EntidadeData<ID> extends Entidade<ID> {
 	
 	protected Boolean ativo = false;
 

@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Data									//TODO: certificar do alerta -> conflito na JPA usando @Data
 @EqualsAndHashCode(callSuper = true)	//TODO: certificar do alerta -> conflito na JPA usando @EqualsAndHashCode
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @Entity(name = "pedido_produto")
 final public class PedidoProduto extends EntidadeData<Integer> {
 

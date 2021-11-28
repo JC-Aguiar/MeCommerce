@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @Entity(name = "marca")
-final public class Marca implements Entidade<Short> {
+final public class Marca extends Entidade<Short> {
 	
 	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Short id;

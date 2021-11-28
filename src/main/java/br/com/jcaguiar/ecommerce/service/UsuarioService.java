@@ -4,10 +4,10 @@ import br.com.jcaguiar.ecommerce.model.Usuario;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
 import br.com.jcaguiar.ecommerce.repository.UsuarioRepository;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UsuarioService extends MasterService<Usuario, Integer> {
@@ -16,8 +16,10 @@ public class UsuarioService extends MasterService<Usuario, Integer> {
 		super(userRepo);
 	}
 	
-	public Optional<Usuario> findByEmail(String email) {
-		return  ((UsuarioRepository) JPA_REPO).findByEmail(email);
+	public Usuario findByEmail(String email) {
+		return  ((UsuarioRepository) JPA_REPO).findByEmail(email).orElseThrow(
+				() -> new UsernameNotFoundException("O e-mail solicitado não possui registro na nossa base de dados.")
+		);
 	}
 
 	public Usuario add(Usuario user) {

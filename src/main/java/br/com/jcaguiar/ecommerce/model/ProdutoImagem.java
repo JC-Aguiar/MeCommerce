@@ -17,7 +17,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 @Entity(name = "produto_imagem")
-final public class ProdutoImagem implements Entidade<Long> {
+final public class ProdutoImagem extends Entidade<Long> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,31 +1,175 @@
 package br.com.jcaguiar.ecommerce.service;
 
 import br.com.jcaguiar.ecommerce.Console;
+import br.com.jcaguiar.ecommerce.dto.ProdutoCsvPOST;
 import br.com.jcaguiar.ecommerce.dto.ProdutoPOST;
-import br.com.jcaguiar.ecommerce.model.Produto;
+import br.com.jcaguiar.ecommerce.model.*;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
 import br.com.jcaguiar.ecommerce.repository.ProdutoRepository;
+import br.com.jcaguiar.ecommerce.util.ResultadoCsv;
+import br.com.jcaguiar.ecommerce.util.TratarString;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Service
 public class ProdutoService extends MasterService<Produto, Integer> {
 	
-	@Autowired ModelMapper modelMapper;
+	@Autowired private ModelMapper modelMapper;
+	@Autowired private SetorService setorService;
+	@Autowired private CategoriaService categoriaService;
+	@Autowired private MarcaService marcaService;
+	@Autowired private ImagemProdutoService imgService;
+	@Autowired private ProblemaService problemaService;
 	
 	public ProdutoService(ProdutoRepository jpaRepo) {
 		super(jpaRepo);
 	}
+
+	public ResultadoCsv<?> impCsv(String[] linhaCsv) {
+		final ProdutoCsvPOST produtoDTO;
+		final Produto produto;
+		//Identificando valores de cada campo
+		final String setor 		= linhaCsv[0];  //Coluna A
+		final String categoria 	= linhaCsv[1];  //Coluna B
+		final String nome 		= linhaCsv[2];  //Coluna C
+		final String descricao 	= linhaCsv[3];  //Coluna D
+		final String marcas 	= linhaCsv[4];  //Coluna E
+		final String modelo 	= linhaCsv[5];  //Coluna F
+		final String valor 		= linhaCsv[6];  //Coluna G
+		final String estoque 	= linhaCsv[7];  //Coluna H
+		final String materiais 	= linhaCsv[8];  //Coluna I
+		final String medidas 	= linhaCsv[9];  //Coluna J
+		final String tamanho 	= linhaCsv[10]; //Coluna K
+		final String ean 		= linhaCsv[11]; //Coluna L
+		final String imagens 	= linhaCsv[12]; //Coluna M
+		//Declarando variáveis finais (a tratar)
+		final BigDecimal valorFinal;
+		final short estoqueFinal;
+		final String tamanhoFinal;
+		final List<Marca> marcasFinal = new ArrayList<>();
+		final List<ProdutoImagem> imagensFinais = new ArrayList<>();
+		//Declarando variáveis de tratamento
+		final List<String> marcasArray = Arrays.asList(
+				TratarString.getDepois(marcas,":").split(","));
+		final String[] imagensArray = imagens.split(",");
+		//Tratando VALOR - conversão
+		try {
+			valorFinal = TratarString.paraBigDecimal(valor);
+		} catch (NumberFormatException e) {
+			return ResultadoCsv.builder()
+					.erro(true)
+					.causa("Campo 'Valor' fora do padrão numérico válido")
+					.exception(e)
+					.build();
+		}
+		//Tratando ESTOQUE - conversão
+		try {
+			estoqueFinal = Short.parseShort(estoque);
+		} catch (NumberFormatException e) {
+			return ResultadoCsv.builder()
+					.erro(true)
+					.causa("Campo 'Estoque' fora do padrão numérico válido")
+					.exception(e)
+					.build();
+		}
+		//Tratando TAMANHO - conversão
+		try {
+			tamanhoFinal = TratarString.sigla(tamanho, 2);
+		} catch (Exception e) {
+			return ResultadoCsv.builder()
+					.erro(true)
+					.causa("Campo 'Tamanho' fora do padrão válido (PP, P, M, G, GG, EG)")
+					.exception(e)
+					.build();
+		}
+		//Convertando campos em DTO POST - para validação
+		//TODO: Será  chamado outro método, passando o csvPOST por parâmetro, responsável em converter
+		//      DTO em entidade e então salva-lo no banco de dados.
+		try {
+			produtoDTO = ProdutoCsvPOST.builder()
+					.setorNome(setor)
+					.categoriaNome(categoria)
+					.nome(nome)
+					.descricao(descricao)
+					.modelo(modelo)
+					.valor(valorFinal)
+					.estoque(estoqueFinal)
+					.materiais(materiais)
+					.medidas(medidas)
+					.tamanho(tamanhoFinal)
+					.ean(ean)
+					.build();
+		} catch (Exception e) {
+			return ResultadoCsv.builder()
+					.erro(true)
+					.causa(e.getLocalizedMessage())
+					.exception(e)
+					.build();
+		}
+		try {
+			//Crie ou Pegue: Setor, Categoria e Marcas
+			final Setor setorFinal = setorService.validarByNome(setor);
+			final Categoria categoriaFinal = categoriaService.validarByNome(setorFinal, categoria);
+			marcasArray.forEach(mc -> marcasFinal.add(marcaService.validarByNome(mc)));
+			//Criando Produtos
+			produto = Produto.builder()
+					.categoria(categoriaFinal)
+					.nome(nome)
+					.descricao(descricao)
+					.modelo(modelo)
+					.valor(valorFinal)
+					.estoque(estoqueFinal)
+					.material(materiais)
+					.medidas(medidas)
+					.tamanho(tamanhoFinal)
+					.codigo(ean)
+					.build();
+			//Criando Imagens
+//				imagensArray.forEach(
+//						img -> imagensFinais.add(ProdutoImagem.builder()
+//								.imagem(img)
+//								.produto(produto)
+//								.build())
+//				);
+			for(String img : imagensArray) {
+				imagensFinais.add(ProdutoImagem.builder()
+						.imagem(img)
+						.produto(produto)
+						.build()
+				);
+			}
+			//Inserindo Atributos Pendentes (Imagens e Marca)
+			produto.addImagem(imagensFinais);
+			produto.addMarca(marcasFinal);
+			produto.setAcessos(0);
+			produto.setNota((short) 0);
+			produto.setVotos(0);
+			return ResultadoCsv.builder()
+					.erro(false)
+					.objeto(salvar(produto))
+					.build();
+		} catch (Exception e) {
+			problemaService.salvar( new Problema(e) );
+			Console.log("Erro ao tentar processar/salvar produto!");
+			Console.log("Causa: " + e.getLocalizedMessage());
+			return ResultadoCsv.builder()
+					.erro(true)
+					.causa(e.getLocalizedMessage())
+					.build();
+		}
+	}
 	
 	public List<Produto> findAll(Example<Produto> produtoExemplo) {
 		//Realizando consulta
-		List<Produto> produtos = ((ProdutoRepository) JPA_REPO).findAll(produtoExemplo);
+		List<Produto> produtos = JPA_REPO.findAll(produtoExemplo);
 		Console.log("[PRODUTO-SERVICE] Total: " + produtos.size());
 		return produtos;
 	}
@@ -123,7 +267,7 @@ public class ProdutoService extends MasterService<Produto, Integer> {
 	}
 	
 	public void removeAll() {
-		((ProdutoRepository) JPA_REPO).deleteAll();
+		JPA_REPO.deleteAll();
 	}
 
 

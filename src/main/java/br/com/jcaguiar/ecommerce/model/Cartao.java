@@ -23,7 +23,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @Entity(name = "cartao")
-final public class Cartao implements Entidade<Integer> {
+final public class Cartao extends Entidade<Integer> {
 
 	/**
 	 * TODO: os dados dos atributos "numero" e "cpf" devem ser criptografados

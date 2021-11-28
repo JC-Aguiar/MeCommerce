@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @Entity(name = "voto")
-final public class Voto implements Entidade<Integer> {
+final public class Voto extends Entidade<Integer> {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

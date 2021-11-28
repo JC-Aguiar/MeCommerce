@@ -25,7 +25,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Entity(name = "endereco")
-final public class Endereco implements Entidade<Integer> {
+final public class Endereco extends Entidade<Integer> {
 	
 	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;

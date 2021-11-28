@@ -23,7 +23,7 @@ import javax.persistence.*;
  */
 @Getter
 @Setter
-@SuperBuilder(toBuilder = true)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass

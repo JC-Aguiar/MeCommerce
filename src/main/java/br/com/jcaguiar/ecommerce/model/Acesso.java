@@ -32,7 +32,7 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @Entity(name = "acesso")
-final public class Acesso implements Entidade<Long> {
+final public class Acesso extends Entidade<Long> {
 
 	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

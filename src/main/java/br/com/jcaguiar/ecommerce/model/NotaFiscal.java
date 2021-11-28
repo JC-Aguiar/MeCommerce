@@ -24,7 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "nota_fiscal")
-final public class NotaFiscal implements Entidade<Long>, MasterGET {
+final public class NotaFiscal extends Entidade<Long> implements MasterGET {
 
 	//TODO: descobrir quais campos são oficialmente obrigatórios numa NF!
 

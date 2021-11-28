@@ -19,13 +19,12 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity(name = "problema")
-final public class Problema implements Entidade<Long> {
+final public class Problema extends Entidade<Long> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(length = 9000)
+    @Column(length = 12000, nullable = false)
     @Convert(converter = StringListJsonConverter.class)
     List<String> stack;
 

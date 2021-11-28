@@ -1,15 +1,13 @@
 package br.com.jcaguiar.ecommerce.repository;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
+import br.com.jcaguiar.ecommerce.model.Setor;
 import org.springframework.stereotype.Repository;
 
-import br.com.jcaguiar.ecommerce.model.Setor;
+import java.util.Optional;
 
 @Repository
 public interface SetorRepository extends MasterRepository<Setor, Short> {
-	
-	List<Setor> findAllByNomeContaining(String nome);
+
+	Optional<Setor> findAllByNomeContaining(String nome);
 	
 }

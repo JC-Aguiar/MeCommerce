@@ -21,7 +21,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @Entity(name = "estado")
-final public class Estado implements Entidade<Short> {
+final public class Estado extends Entidade<Short> {
 	
 	@Id  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Short id;

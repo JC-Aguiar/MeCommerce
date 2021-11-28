@@ -8,8 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 /**<h1>CONCEITO </h1>
  * Classe responsável pela lógica da autenticação.
  * A interface UserDetailsService serve justamente para o Spring reconhecer essa classe como tal. <br>
@@ -32,16 +30,13 @@ public class ProvedorLoginService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		Console.log("<LOGIN SERVICE>", +1);
-		Optional<Usuario> usuario = userService.findByEmail(email);
-		if( !usuario.isPresent() ) {
-			throw new UsernameNotFoundException("Credenciais inválidas.");
-		}	
+		Usuario usuario = userService.findByEmail(email);
 		Console.log(String.format(
 				"Usuário identificado: %s",
-				usuario.get().getEmail())
+				usuario.getEmail())
 		);
 		Console.log("</LOGIN SERVICE>", -1);
-		return usuario.get();
+		return usuario;
 	}
 
 }

@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @Entity(name = "pagamento")
-final public class Pagamento implements Entidade<Long> {
+final public class Pagamento extends Entidade<Long> {
 
 	/**
 	 * TODO: como funciona um pagamento oficialmente? O objeto é criado e fica aguardando o comprovante,

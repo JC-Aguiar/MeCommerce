@@ -21,11 +21,11 @@ import java.util.Date;
 @Service
 public final class TokenService {
 
+	@Autowired private UsuarioService userService;
 	final static private String SEGREDO = "AAAAB3NzaC1yc2EAAAADAQABAAABAQCu9uKkd/f23+CSmwp/Sx72HkRu1wW5Qn238DRzTW7IZWJi2IruikgxXewhaL9ncS8Bm437ScfmjjewLZuVxyRwMs2vBCb4yuXvYl4v2gd+vjw3QdlpHOplTE3BzA1LPco8vVEevBO9j8vFJoHcYjdwnhaOVqFl2Nm+I2WEBFVlnJtWV/zmdmVZxrCxvYEuZ1kLigfA9dtwtOEWrvcieIg132rB73HgmnjhKUKjBjbXzDEW0drgUnjt/Q8Jr/ix6IgPX6F71V6bwkJb0POv/rOHXOnh8gshgZQMgvrQ9/IFk6Ko+FBtMenqIeEZyNnB0chwo2SPAyOdo5w9y6XxcIQ9 ";
 	final static private int TEMPO_LOGIN = 1800000;
 
-	@Autowired private UsuarioService userService;
-	
+
 	/**<hr><h2>CRIANDO TOKEN APÓS LOGIN</h2>
 	 * Uma vez autenticado, o token JWT será gerado a este usuário <br>
 	 * <ol>
@@ -54,27 +54,20 @@ public final class TokenService {
 	 */
 	public String newToken(Authentication userAutenticado) {
 		Console.log("<TOKEN SERVICE>", +1);
-		try {
-			Usuario usuario = userService.findByEmail( userAutenticado.getName() ).get();
-			Date hoje = new Date();
-			Date validade = new Date(hoje.getTime() + TEMPO_LOGIN);
-			String token = Jwts.builder()
-					.setIssuer("API ECOMMERCE")
-					.setSubject( usuario.getId().toString() )
-					.setIssuedAt(hoje)
-					.setExpiration(validade)
-					.signWith(SignatureAlgorithm.HS256, SEGREDO)
-					.compact();
-			Console.log("Token JWT criado com sucesso.");
-			return token;
-		}
-		catch (Exception e) {
-			Console.log("ERRO AUTORIZAÇÃO: Usuário nulo.");
-			return "";
-		}
-		finally {
-			Console.log("</TOKEN SERVICE>.", -1);
-		}
+		Usuario usuario = userService.findByEmail( userAutenticado.getName() );
+		Date hoje = new Date();
+		Date validade = new Date(hoje.getTime() + TEMPO_LOGIN);
+		String token = Jwts.builder()
+				.setIssuer("API ECOMMERCE")
+				.setSubject( usuario.getId().toString() )
+				.setIssuedAt(hoje)
+				.setExpiration(validade)
+				.signWith(SignatureAlgorithm.HS256, SEGREDO)
+				.compact();
+		Console.log("Token JWT criado com sucesso.");
+		Console.log("</TOKEN SERVICE>.", -1);
+		return token;
+
 	}
 
 	/**<hr><h2>VALIDANDO TOKEN DO REQUEST</h2>

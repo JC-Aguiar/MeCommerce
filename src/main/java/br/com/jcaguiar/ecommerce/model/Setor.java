@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @Entity(name = "setor")
-final public class Setor implements Entidade<Short> {
+final public class Setor extends Entidade<Short> {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,5 +22,9 @@ final public class Setor implements Entidade<Short> {
 
 	@Column(nullable = false, unique = true)
 	private String nome;
+
+	public Setor getSetor() {
+		return this;
+	}
 
 }
