@@ -45,11 +45,13 @@ public class AcessoFilter implements HandlerInterceptor {
 		Console.log(String.format(
 				"<FILTRO DE ACESSOS> \n"
 				+ "\tACESSO:   %s\n"
+                + "\tSTATUS:   %d\n"
 				+ "\tUSER:     %s\n"
 				+ "\tURL:      %s\n"
 				+ "\tDURAÇÃO:  %d.%ds\n"
 				+ "</FILTRO DE ACESSOS> \n",
 				DataFormato.formatar(acesso.getData_acesso()),
+                response.getStatus(),
 				usuario.getEmail(),
 				acesso.getUrl(),
 				acesso.getDuracao().getSeconds(),
@@ -57,7 +59,7 @@ public class AcessoFilter implements HandlerInterceptor {
 		);
 		//HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
 	}
-	
+
 	//USER CHECK
 	final private Usuario getUsuarioLogin(HttpServletRequest request) {
 		try {
@@ -70,7 +72,7 @@ public class AcessoFilter implements HandlerInterceptor {
 					.build();
 		}
 	}
-	
+
 	//PRODUTO CHECK
 	//UNFINISHED!!!!!!!!
 	final private Produto getProdutoAcesso(String url) {

@@ -7,10 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 /**<h1>CONCEITO</h1>
@@ -23,6 +20,7 @@ import javax.validation.Valid;
  * 	@author JM Costal Aguiar
  */
 @RestController
+@CrossOrigin(origins = "*") //http://localhost:8100/
 @RequestMapping("/login")
 public final class LoginController {
 
@@ -37,7 +35,7 @@ public final class LoginController {
 	@Autowired private AuthenticationManager gerenteLogin;
 	@Autowired private TokenService tokenService;
 
-	
+
 	/**<hr><h2>PADRÃO DE AUTENTICAÇÃO</h2>
 	 * Através dos parametros enviados no corpo da requisição, o sistema tentará: autenticar o usuário(1),
 	 * criar Token tipo Bearer desse usuário(2) e retornar a versão DTO desse token na resposta ao cliente(3) <br>
@@ -48,7 +46,7 @@ public final class LoginController {
 	 * 					Utiliza os atributos "E-mail" e "Senha" para preparar a autenticação. <br>
 	 * 			<b>Authentication:</b>
 	 * 					Através do "AuthenticationManager.authenticate" o sistema consultará
-	 * 					as configurações do Spring, chamando o provedor de autenticação 
+	 * 					as configurações do Spring, chamando o provedor de autenticação
 	 * 					"ProvedorLoginService", pois este consta usando a interface "UserDetailsService".
 	 * </li>
 	 * <li> <b>CRIANDO TOKEN</b> <br>
@@ -63,7 +61,7 @@ public final class LoginController {
 	 * @param login objeto da classe LoginPOST, contendo e-mail e senha.
 	 * @return token (string) da autenticação para esse usuário.
 	 */
-	@PostMapping
+    @PostMapping
 	public ResponseEntity<?> autenticar(@RequestBody @Valid LoginPOST login) {
 		Console.log("<LOGIN CONTROLER>", +1);
 		try {
@@ -76,13 +74,7 @@ public final class LoginController {
 			Authentication userAutenticado = gerenteLogin.authenticate(autenticarDados);
 			//Gerando JWT á partir do Authentication
 			Console.log("Criando Token...");
-			String token = tokenService.newToken(userAutenticado);
-			//Convertendo JWT para DTO
-			TokenDto tokenDto = new TokenDto(token, "Bearer");
-			Console.log(
-					String.format("Token: %s", token)
-			);
-			return ResponseEntity.ok(tokenDto);
+			return ResponseEntity.ok(tokenService.newToken(userAutenticado));
 		}
 		catch (AuthenticationException e) {
 			return ResponseEntity.status(401).build();
@@ -93,7 +85,7 @@ public final class LoginController {
 		finally {
 			Console.log("</LOGIN CONTROLER>", -1);
 		}
-		
+
 	}
-	
+
 }

@@ -14,6 +14,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.stereotype.Controller;
 
 import br.com.jcaguiar.ecommerce.service.UsuarioService;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**<h1>CONCEITO</h1>
  * TODO: descrever conceito e requisitos <br>
@@ -26,13 +28,13 @@ import br.com.jcaguiar.ecommerce.service.UsuarioService;
  */
 @Controller
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
 	@Autowired private TokenService tokenService;
 	@Autowired private ProvedorLoginService provedorLoginService;
 	@Autowired private ProvedorAutorizadorService provedorAuth;
 	@Autowired private UsuarioService userService;
- 
+
 	/**<hr>
 	 * <h2>CONFIGURAR AUTORIZAÇÕES</h2>
 	 * Configurando restrições de acesso aos end-points da API (1 ~ 6) <br>
@@ -76,7 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		Class<UsernamePasswordAuthenticationFilter> filtroAntes = UsernamePasswordAuthenticationFilter.class;
 		AutenticarTokenFilter filtroToken = new AutenticarTokenFilter(tokenService, userService);
-		
+
 		http
 			.authorizeRequests().mvcMatchers("/adm/**").hasAnyRole("ADM").and()
 			.authorizeRequests().mvcMatchers("/profile/**").hasAnyRole("USER").and()
@@ -86,7 +88,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 			.addFilterBefore(filtroToken, filtroAntes);
 	}
-	
+
 	/**<hr>
 	 * <h2>CONFIGURAR AUTENTICAÇÃO</h2>
 	 * Método que configura e define autenticação:<br>
@@ -96,13 +98,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		//Classe de criptografia de senhas 
+		//Classe de criptografia de senhas
 		final BCryptPasswordEncoder ENCRIPT = new BCryptPasswordEncoder();
 		//Definindo provedor de autenticação(1) e autorização(2)
 		auth.userDetailsService(provedorLoginService).passwordEncoder(ENCRIPT)
 				.and().authenticationProvider(provedorAuth);
 	}
-	
+
 	/**<hr>
 	 * <h2>PROVIDENCIANDO AUTHENTICATION MANAGER</h2>
 	 * Método para criar Bean do Authentication Manager, necessário no LoginController <br>
@@ -113,5 +115,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected AuthenticationManager authenticationManager() throws Exception {
 		return super.authenticationManager();
 	}
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**");
+    }
 }
 

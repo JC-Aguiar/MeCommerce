@@ -6,7 +6,7 @@ import br.com.jcaguiar.ecommerce.dto.ProdutoPOST;
 import br.com.jcaguiar.ecommerce.model.*;
 import br.com.jcaguiar.ecommerce.projection.MasterGET;
 import br.com.jcaguiar.ecommerce.repository.ProdutoRepository;
-import br.com.jcaguiar.ecommerce.util.ResultadoCsv;
+import br.com.jcaguiar.ecommerce.util.ApiProcesso;
 import br.com.jcaguiar.ecommerce.util.TratarString;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +33,9 @@ public class ProdutoService extends MasterService<Produto, Integer> {
 		super(jpaRepo);
 	}
 
-	public ResultadoCsv<?> impCsv(String[] linhaCsv) {
-		final ProdutoCsvPOST produtoDTO;
+	public ApiProcesso<Produto> impCsv(String[] linhaCsv) {
 		final Produto produto;
+		final ProdutoCsvPOST produtoDTO;
 		//Identificando valores de cada campo
 		final String setor 		= linhaCsv[0];  //Coluna A
 		final String categoria 	= linhaCsv[1];  //Coluna B
@@ -64,7 +64,7 @@ public class ProdutoService extends MasterService<Produto, Integer> {
 		try {
 			valorFinal = TratarString.paraBigDecimal(valor);
 		} catch (NumberFormatException e) {
-			return ResultadoCsv.builder()
+			return ApiProcesso.<Produto>builder()
 					.erro(true)
 					.causa("Campo 'Valor' fora do padrão numérico válido")
 					.exception(e)
@@ -74,7 +74,7 @@ public class ProdutoService extends MasterService<Produto, Integer> {
 		try {
 			estoqueFinal = Short.parseShort(estoque);
 		} catch (NumberFormatException e) {
-			return ResultadoCsv.builder()
+			return ApiProcesso.<Produto>builder()
 					.erro(true)
 					.causa("Campo 'Estoque' fora do padrão numérico válido")
 					.exception(e)
@@ -84,7 +84,7 @@ public class ProdutoService extends MasterService<Produto, Integer> {
 		try {
 			tamanhoFinal = TratarString.sigla(tamanho, 2);
 		} catch (Exception e) {
-			return ResultadoCsv.builder()
+			return ApiProcesso.<Produto>builder()
 					.erro(true)
 					.causa("Campo 'Tamanho' fora do padrão válido (PP, P, M, G, GG, EG)")
 					.exception(e)
@@ -108,7 +108,7 @@ public class ProdutoService extends MasterService<Produto, Integer> {
 					.ean(ean)
 					.build();
 		} catch (Exception e) {
-			return ResultadoCsv.builder()
+			return ApiProcesso.<Produto>builder()
 					.erro(true)
 					.causa(e.getLocalizedMessage())
 					.exception(e)
@@ -152,7 +152,7 @@ public class ProdutoService extends MasterService<Produto, Integer> {
 			produto.setAcessos(0);
 			produto.setNota((short) 0);
 			produto.setVotos(0);
-			return ResultadoCsv.builder()
+			return ApiProcesso.<Produto>builder()
 					.erro(false)
 					.objeto(salvar(produto))
 					.build();
@@ -160,7 +160,7 @@ public class ProdutoService extends MasterService<Produto, Integer> {
 			problemaService.salvar( new Problema(e) );
 			Console.log("Erro ao tentar processar/salvar produto!");
 			Console.log("Causa: " + e.getLocalizedMessage());
-			return ResultadoCsv.builder()
+			return ApiProcesso.<Produto>builder()
 					.erro(true)
 					.causa(e.getLocalizedMessage())
 					.build();

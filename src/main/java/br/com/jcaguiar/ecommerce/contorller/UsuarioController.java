@@ -59,7 +59,7 @@ public class UsuarioController extends MasterController<Usuario, Integer, Usuari
 
 	@PostMapping("/add")
 	@Transactional
-	public ResponseEntity<?> add(@Valid @RequestBody UsuarioPOST userPost) throws CadastroDuplicadoException, Exception {
+	public ResponseEntity<?> add(@Valid @RequestBody UsuarioPOST userPost) throws Exception {
 		try {
 			Console.log("Nova solicitação para cadastro de usuário.");
 			//Convertendo DTO para Entidade
@@ -85,6 +85,12 @@ public class UsuarioController extends MasterController<Usuario, Integer, Usuari
 			throw new CadastroDuplicadoException("E-mail já consta em uso. Favor tentar novamente com outro.");
 		}
 	}
+//    @PostMapping("/login")
+//    public ResponseEntity<?> findOne (@RequestBody @Valid UsuarioPOST loginDTO) {
+//        final Usuario usuario = ((UsuarioService) masterService).findByEmail(loginDTO.getEmail());
+//        final MasterGET usuarioDTO = conversorDto(usuario, UsuarioGET.class);
+//        return new ResponseEntity<>(usuarioDTO, HttpStatus.OK);
+//    }
 
 
 	@Override

@@ -2,8 +2,10 @@ package br.com.jcaguiar.ecommerce.security;
 
 import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.model.Usuario;
+import br.com.jcaguiar.ecommerce.projection.UsuarioGET;
 import br.com.jcaguiar.ecommerce.service.UsuarioService;
 import io.jsonwebtoken.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.util.Date;
 @Service
 public final class TokenService {
 
+    @Autowired private ModelMapper modelMapper;
 	@Autowired private UsuarioService userService;
 	final static private String SEGREDO = "AAAAB3NzaC1yc2EAAAADAQABAAABAQCu9uKkd/f23+CSmwp/Sx72HkRu1wW5Qn238DRzTW7IZWJi2IruikgxXewhaL9ncS8Bm437ScfmjjewLZuVxyRwMs2vBCb4yuXvYl4v2gd+vjw3QdlpHOplTE3BzA1LPco8vVEevBO9j8vFJoHcYjdwnhaOVqFl2Nm+I2WEBFVlnJtWV/zmdmVZxrCxvYEuZ1kLigfA9dtwtOEWrvcieIg132rB73HgmnjhKUKjBjbXzDEW0drgUnjt/Q8Jr/ix6IgPX6F71V6bwkJb0POv/rOHXOnh8gshgZQMgvrQ9/IFk6Ko+FBtMenqIeEZyNnB0chwo2SPAyOdo5w9y6XxcIQ9 ";
 	final static private int TEMPO_LOGIN = 1800000;
@@ -52,18 +55,20 @@ public final class TokenService {
 	 * @param userAutenticado da CLasse Authentication. Contendo e-mail e senha.
 	 * @return String token
 	 */
-	public String newToken(Authentication userAutenticado) {
+	public TokenDto newToken(Authentication userAutenticado) {
 		Console.log("<TOKEN SERVICE>", +1);
 		Usuario usuario = userService.findByEmail( userAutenticado.getName() );
 		Date hoje = new Date();
 		Date validade = new Date(hoje.getTime() + TEMPO_LOGIN);
-		String token = Jwts.builder()
+		String jwt = Jwts.builder()
 				.setIssuer("API ECOMMERCE")
 				.setSubject( usuario.getId().toString() )
 				.setIssuedAt(hoje)
 				.setExpiration(validade)
 				.signWith(SignatureAlgorithm.HS256, SEGREDO)
 				.compact();
+        UsuarioGET usuarioDto = modelMapper.map(usuario, UsuarioGET.class);
+        final TokenDto token = new TokenDto(jwt, "Bearer", usuarioDto);
 		Console.log("Token JWT criado com sucesso.");
 		Console.log("</TOKEN SERVICE>.", -1);
 		return token;
@@ -84,7 +89,7 @@ public final class TokenService {
 		try {
 			//Processando token Jwt
 			String userIdString = Jwts.parser().setSigningKey(SEGREDO).parseClaimsJws(token).getBody().getSubject();
-			Integer userId = Integer.parseInt(userIdString); 
+			Integer userId = Integer.parseInt(userIdString);
 			Console.log("Usuário logado com sucesso");
 			return userId;
 		}
@@ -106,5 +111,5 @@ public final class TokenService {
 		}
 		return -1;
 	}
-	
+
 }
