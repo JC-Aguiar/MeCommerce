@@ -27,6 +27,8 @@ public class ErroInesperado implements MasterGET, MasterPOST {
         this.path = path;
     }
 
+
+
 }
 
 

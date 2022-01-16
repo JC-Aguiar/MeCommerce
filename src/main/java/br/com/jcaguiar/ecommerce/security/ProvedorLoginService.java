@@ -4,6 +4,7 @@ import br.com.jcaguiar.ecommerce.Console;
 import br.com.jcaguiar.ecommerce.model.Usuario;
 import br.com.jcaguiar.ecommerce.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 public class ProvedorLoginService implements UserDetailsService {
 
 	@Autowired private UsuarioService userService;
-	
+
 	/**<hr><h2>CONSULTAR USUÁRIO</h2>
 	 * Método evocado pelo "LoginController" para coletar e retornar o usuário com base no atributo do email. <br>
 	 * Método utilizado pela classe WebSecurityConfig. <br>
@@ -28,15 +29,32 @@ public class ProvedorLoginService implements UserDetailsService {
 	 * @throws UsernameNotFoundException
 	 */
 	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String email) throws AuthenticationCredentialsNotFoundException {
 		Console.log("<LOGIN SERVICE>", +1);
-		Usuario usuario = userService.findByEmail(email);
-		Console.log(String.format(
-				"Usuário identificado: %s",
-				usuario.getEmail())
-		);
-		Console.log("</LOGIN SERVICE>", -1);
-		return usuario;
+		try {
+            final Usuario usuario = userService.findByEmail(email);
+            Console.log(String.format( "Usuário identificado: %s", usuario.getEmail() ));
+            return usuario;
+        } catch (Exception e) {
+            throw new AuthenticationCredentialsNotFoundException("");
+        }
+		finally {
+            Console.log("</LOGIN SERVICE>", -1);
+        }
 	}
 
 }
+
+
+/**
+ * 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+ * 		Console.log("<LOGIN SERVICE>", +1);
+ * 		Usuario usuario = userService.findByEmail(email);
+ * 		Console.log(String.format(
+ * 				"Usuário identificado: %s",
+ * 				usuario.getEmail())
+ * 		);
+ * 		Console.log("</LOGIN SERVICE>", -1);
+ * 		return usuario;
+ *        }
+ */

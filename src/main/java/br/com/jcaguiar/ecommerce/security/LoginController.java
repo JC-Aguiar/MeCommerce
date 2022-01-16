@@ -3,12 +3,14 @@ package br.com.jcaguiar.ecommerce.security;
 import br.com.jcaguiar.ecommerce.Console;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 /**<h1>CONCEITO</h1>
  *
@@ -34,6 +36,7 @@ public final class LoginController {
 
 	@Autowired private AuthenticationManager gerenteLogin;
 	@Autowired private TokenService tokenService;
+    @Autowired private ProvedorLoginService provedorLogin;
 
 
 	/**<hr><h2>PADRÃO DE AUTENTICAÇÃO</h2>
@@ -62,13 +65,17 @@ public final class LoginController {
 	 * @return token (string) da autenticação para esse usuário.
 	 */
     @PostMapping
-	public ResponseEntity<?> autenticar(@RequestBody @Valid LoginPOST login) {
+	public ResponseEntity<?> autenticar(@RequestBody @Valid LoginPOST login, HttpServletRequest request) {
 		Console.log("<LOGIN CONTROLER>", +1);
 		try {
-			//Criando Spring Token de autenticação
+            //Validando o e-mail do usuário
+            provedorLogin.loadUserByUsername(login.getEmail());
+			//Criando um objeto só agrupando os atributos "email" e "senha" do tipo UsernamePasswordAuthenticationToken.
+            //Este objeto é usado no post de validação de login, no método "LoginController.autenticar".
 			Console.log("Compilando Autenticação...");
-			UsernamePasswordAuthenticationToken autenticarDados = login.compilarDados();
-			//Transformando Spring Token em objeto Authentication
+			UsernamePasswordAuthenticationToken autenticarDados = new UsernamePasswordAuthenticationToken(
+                login.getEmail(), login.getSenha());
+			//Transformando o UsernamePasswordAuthenticationToken em Authentication
 			//A classe ProvedorAutorizadorService foi configurada para realizar método próprio no lugar do "authenticate".
 			Console.log("Realizando Autenticação...");
 			Authentication userAutenticado = gerenteLogin.authenticate(autenticarDados);
@@ -77,11 +84,15 @@ public final class LoginController {
 			return ResponseEntity.ok(tokenService.newToken(userAutenticado));
 		}
 		catch (AuthenticationException e) {
-			return ResponseEntity.status(401).build();
+//          final HttpStatus status = HttpStatus.UNAUTHORIZED;
+//          final String mensagem = "Credenciais inválidas";
+//          final ErroInesperado erro = new ErroInesperado(status, mensagem, request.getRequestURI());
+//			return new ResponseEntity(erro, HttpStatus.UNAUTHORIZED);
+            throw new AuthenticationCredentialsNotFoundException("");
 		}
-		catch (Exception e) {
-			return ResponseEntity.badRequest().build();
-		}
+//		catch (Exception e) {
+//			return ResponseEntity.badRequest().build();
+//		}
 		finally {
 			Console.log("</LOGIN CONTROLER>", -1);
 		}

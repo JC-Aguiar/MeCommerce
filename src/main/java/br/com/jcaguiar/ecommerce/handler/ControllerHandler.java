@@ -22,7 +22,7 @@ import java.util.List;
 
 @RestControllerAdvice
 public final class ControllerHandler {
-	
+
 	@Autowired
 	private MessageSource messageSource;
 
@@ -92,6 +92,14 @@ public final class ControllerHandler {
 			case "NullPointerException":
 				mensagem = "O servidor não conseguiu processar os dados enviados.";
 				break;
+            case "AuthenticationCredentialsNotFoundException":
+                mensagem = "Credenciais inválidas.";
+                status = HttpStatus.UNAUTHORIZED;
+                break;
+            case "AuthenticationException":
+                mensagem = "Credenciais inválidas.";
+                status = HttpStatus.UNAUTHORIZED;
+                break;
 			default:
 				mensagem = mensagem.length() < 2 ? "Inconformidade em manutenção (#EXCEP-11)." : mensagem;
 		}
@@ -109,5 +117,5 @@ public final class ControllerHandler {
 				new ErroInesperado(status, mensagem, request.getRequestURI()),
 				status);
 	}
-	
+
 }

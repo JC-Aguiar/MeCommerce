@@ -6,12 +6,17 @@ import br.com.jcaguiar.ecommerce.model.Usuario;
 import br.com.jcaguiar.ecommerce.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static org.hibernate.validator.internal.util.Contracts.assertTrue;
+
 /**<h1>CONCEITO </h1>
  * Classe responsável pela lógica dos objetos Authentication.
  * A interface AuthenticationProvider serve justamente para o Spring reconhecer essa classe como tal. <br>
@@ -33,13 +38,20 @@ public class ProvedorAutorizadorService implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication auth) throws AuthenticationException {
     	Console.log("<PROVEDOR AUTENTICAÇÃO>", +1);
-    	String email = auth.getName();
-        String senha = auth.getCredentials().toString();
-        List<Perfil> perfis = (List<Perfil>) auth.getAuthorities();
+    	final String email = auth.getName();
+        final String senha = auth.getCredentials().toString();
+        final List<Perfil> perfis = (List<Perfil>) auth.getAuthorities();
         Console.log("Perfils do Usuário: ");
-        for(Perfil perfil : perfis) {
-        	Console.log("   " + perfil.getAuthority());
+        perfis.forEach(p -> Console.log(p.getAuthority()));
+        //validando senha
+        final BCryptPasswordEncoder encript = new BCryptPasswordEncoder();
+        final String senhaCypt = userService.findByEmail(email).getSenha();
+        final boolean validarSenha = encript.matches(senha, senhaCypt);
+        try { assertTrue(validarSenha,""); }
+        catch (Exception e) {
+            throw new AuthenticationServiceException("");
         }
+        //Retornando ao fluxo de autenticação
         Console.log("</PROVEDOR AUTENTICAÇÃO>", -1);
         return new UsernamePasswordAuthenticationToken(email, senha, perfis);
         //TODO: tratamento correto das possíveis excepções!
